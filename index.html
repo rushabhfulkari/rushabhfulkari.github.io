@@ -45,46 +45,46 @@
   </svg>
 </div>
   <div class="wrap" style="width:100%">
-    <div class="hero__issue rise">
+    <div class="hero__issue" data-fx="rise">
       <span class="stamp stamp--red">Issue #001</span>
       <span class="stamp">The Ship Log</span>
       <span class="stamp stamp--blue">Est. 2021</span>
       <span class="kicker">Bengaluru · India</span>
     </div>
 
-    <h1 class="display display--tone hero__name" data-parallax>
+    <h1 class="display display--tone hero__name" data-fx="drift" data-to="130">
       <span data-text="Rushabh">Rushabh</span><span data-text="Fulkari">Fulkari</span>
     </h1>
 
     <div class="hero__grid">
       <div>
-        <p class="hero__tag rise">
+        <p class="hero__tag" data-fx="rise">
           Senior Flutter developer. I ship <b>34 app flavours from one
           codebase</b> to 60&nbsp;million people in 180 countries — and I write
           down what broke on the way.
         </p>
 
-        <div class="hero__cta rise">
+        <div class="hero__cta" data-fx="rise">
           <a class="btn" href="#missions">Read the missions</a>
           <a class="btn btn--ghost" href="#dispatches">Dispatches</a>
           <a class="btn btn--ghost" href="rushabh-fulkari-cv.pdf">CV / PDF</a>
         </div>
 
-        <p class="hero__scroll rise">Scroll <span>↓</span></p>
+        <p class="hero__scroll" data-fx="rise">Scroll <span>↓</span></p>
       </div>
 
-      <aside class="hero__aside">
-        <div class="hero__card rise">
+      <aside class="hero__aside" data-fx="drift" data-to="-70">
+        <div class="hero__card" data-fx="rise">
           <h4>Currently</h4>
           <p>CupidMedia — 34 flavours, one Flutter codebase, 60M members across
              180 countries.</p>
         </div>
-        <div class="hero__card rise" style="transform:rotate(-1.1deg)">
+        <div class="hero__card" data-fx="rise" style="transform:rotate(-1.1deg)">
           <h4>Open to</h4>
           <p>Senior Flutter roles in the UK or US. Offline, hardware, or living
              inside an app that already exists — that is the part I like.</p>
         </div>
-        <div class="hero__card rise" style="transform:rotate(.5deg)">
+        <div class="hero__card" data-fx="rise" style="transform:rotate(.5deg)">
           <h4>Latest</h4>
           <p><a href="https://rushabhfulkari.github.io/cadence/">Cadence</a> —
              ten production-grade Flutter features, running in your browser.</p>
@@ -107,37 +107,37 @@
   <span class="web web--tr" aria-hidden="true"></span>
   <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
   <div class="wrap">
-    <p class="kicker rise">Page 1 — origin story</p>
-    <h2 class="section-title rise">An ordinary<br>codebase…</h2>
-    <p class="section-sub rise">
+    <p class="kicker" data-fx="rise">Page 1 — origin story</p>
+    <h2 class="section-title" data-fx="rise">An ordinary<br>codebase…</h2>
+    <p class="section-sub" data-fx="rise">
       …until you multiply it by thirty-four. Five years, four companies, and one
       consistent lesson: everything that is a shortcut at one app is a release
       train at thirty-four.
     </p>
 
     <div class="origin__grid">
-      <article class="beat panel panel--tilt-l rise">
+      <article class="beat panel panel--tilt-l" data-fx="rise">
         <p class="beat__no">01 / 04</p>
         <span class="tape-print beat__art"><img src="art/log.png" alt=""></span>
         <h3>Freelance, 2021</h3>
         <p>Six apps across crypto, fashion, logistics and automotive. Learned to ship before learning to architect — the right order, it turns out.</p>
       </article>
 
-      <article class="beat panel panel--tilt-r rise">
+      <article class="beat panel panel--tilt-r" data-fx="rise">
         <p class="beat__no">02 / 04</p>
         <span class="tape-print beat__art"><img src="art/plans.png" alt=""></span>
         <h3>Bottlecap &amp; Fastenal</h3>
         <p>Social, dating and e-commerce, then manufacturing tooling. A form builder that renders itself from API config — my first taste of server-driven UI.</p>
       </article>
 
-      <article class="beat panel panel--tilt-l rise">
+      <article class="beat panel panel--tilt-l" data-fx="rise">
         <p class="beat__no">03 / 04</p>
         <span class="tape-print beat__art"><img src="art/voice.png" alt=""></span>
         <h3>Unico Connect</h3>
         <p>Audio-video calling on the Stream SDK. Call state that survives the app lifecycle, background handling, and reconnection through real network drops.</p>
       </article>
 
-      <article class="beat panel panel--tilt-r rise">
+      <article class="beat panel panel--tilt-r" data-fx="rise">
         <p class="beat__no">04 / 04</p>
         <span class="tape-print beat__art"><img src="art/coach.png" alt=""></span>
         <h3>CupidMedia, now</h3>
@@ -148,57 +148,60 @@
 </section>
 
 <!-- ══════════════ POWERS ══════════════ -->
-<section id="powers">
+<section id="powers" class="pin" style="height:420vh">
   <span class="web web--bl" aria-hidden="true"></span>
-  <div class="wrap">
-    <p class="kicker rise">— what I actually do —</p>
-    <h2 class="section-title rise">My<br>powers</h2>
-    <p class="section-sub rise">Drag sideways. ← no wait, →</p>
+  <span class="speedlines" aria-hidden="true"></span>
+  <div class="pin__stage">
+    <div class="pin__head">
+      <p class="kicker" data-fx="rise">— what I actually do —</p>
+      <h2 class="section-title" data-fx="rise">My powers</h2>
+      <p class="section-sub" style="margin-bottom:0" data-fx="rise">Keep scrolling. The strip moves sideways. →</p>
+    </div>
 
-    <div class="rail">
-      <article class="power rise">
+    <div class="pin__track rail" data-fx="pin-x" data-pin-auto data-start="1" data-end="-2.4">
+      <article class="power" data-fx="rise">
         <p class="power__no">01</p>
         <h3>Cross-platform<br>architecture</h3>
         <p>Clean architecture and BLoC across 34 flavours from one codebase. Multi-flavour infrastructure that does not special-case its way into a corner.</p>
         <p class="power__tags">Flutter · Dart · BLoC · GetIt · built_value</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">02</p>
         <h3>Native<br>platform work</h3>
         <p>Platform channels, native ad factories on both platforms, Flutter embedded in Kotlin and Swift hosts over Pigeon with a cached engine.</p>
         <p class="power__tags">Kotlin · Swift · Pigeon · Add-to-app</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">03</p>
         <h3>Offline &amp;<br>real-time</h3>
         <p>Outbox queues with backoff and a written conflict rule. VoIP and WebRTC calling. BLE GATT with stream lifecycle and bounded reconnection.</p>
         <p class="power__tags">SQLite · WebRTC · BLE · WebSockets</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">04</p>
         <h3>Monetisation<br>&amp; compliance</h3>
         <p>Ad platform built from zero — seven mediation networks, remote-configurable placements. Age verification across four jurisdictions, GDPR, ATT.</p>
         <p class="power__tags">AdMob · CMP SDK · Akamai BMP · GDPR</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">05</p>
         <h3>Testing that<br>finds things</h3>
         <p>Unit, BDD widget, integration and Maestro. The tests worth writing are the ugly ones — truncated packets, killed processes, stale versions.</p>
         <p class="power__tags">Mockito · Mocktail · Maestro · 80%+ coverage</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">06</p>
         <h3>Shipping<br>machinery</h3>
         <p>Bitrise, Fastlane and GitHub Actions. An 80% cut in deployment time is the difference between bi-weekly releases and releases when someone is free.</p>
         <p class="power__tags">Bitrise · Fastlane · Sentry · Raygun</p>
       </article>
 
-      <article class="power rise">
+      <article class="power" data-fx="rise">
         <p class="power__no">07</p>
         <h3>Building<br>with AI</h3>
         <p>Claude in the loop daily. Ask for the seam, not the feature; make it write the limitation down; and never let a green test suite stand in for looking.</p>
@@ -212,20 +215,20 @@
 <section class="numbers" id="numbers">
   <span class="fx fx--lime" style="top:12%;right:7%" aria-hidden="true">BANG!</span>
   <div class="wrap">
-    <p class="kicker rise" style="color:#B9B1A2">— field report —</p>
-    <h2 class="section-title rise">The<br>numbers</h2>
-    <p class="section-sub rise">Everything below is production, not a side project.</p>
-    <div class="stats rise">
-      <div class="stat"><p class="stat__n">60M+</p><p class="stat__l">Registered members</p></div>
-      <div class="stat"><p class="stat__n">34+</p><p class="stat__l">App flavours, one codebase</p></div>
-      <div class="stat"><p class="stat__n">180+</p><p class="stat__l">Countries served</p></div>
-      <div class="stat"><p class="stat__n">43</p><p class="stat__l">Languages shipped</p></div>
-      <div class="stat"><p class="stat__n">1.4M+</p><p class="stat__l">Installs per month</p></div>
-      <div class="stat"><p class="stat__n">80%</p><p class="stat__l">Deploy time removed</p></div>
-      <div class="stat"><p class="stat__n">80%+</p><p class="stat__l">Test coverage</p></div>
-      <div class="stat"><p class="stat__n">5 yrs</p><p class="stat__l">Shipping Flutter</p></div>
-      <div class="stat"><p class="stat__n">7</p><p class="stat__l">Ad mediation networks</p></div>
-      <div class="stat"><p class="stat__n">4</p><p class="stat__l">Compliance jurisdictions</p></div>
+    <p class="kicker" data-fx="rise" style="color:#B9B1A2">— field report —</p>
+    <h2 class="section-title" data-fx="rise">The<br>numbers</h2>
+    <p class="section-sub" data-fx="rise">Everything below is production, not a side project.</p>
+    <div class="stats" data-fx="rise">
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="34" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">App flavours, one codebase</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="180" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">Countries served</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="43" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Languages shipped</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="1400" data-suffix="K+" data-start=".95" data-end=".55">0</p><p class="stat__l">Installs per month</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="7" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Ad mediation networks</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="4" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Compliance jurisdictions</p></div>
     </div>
   </div>
 </section>
@@ -235,12 +238,12 @@
   <span class="web web--tr" aria-hidden="true"></span>
   <span class="fx fx--blue" style="top:9%;right:5%" aria-hidden="true">POW!</span>
   <div class="wrap">
-    <p class="kicker rise">— the missions —</p>
-    <h2 class="section-title rise">Selected<br>work</h2>
-    <p class="section-sub rise">Five that are worth opening. One of them you can run in this browser.</p>
+    <p class="kicker" data-fx="rise">— the missions —</p>
+    <h2 class="section-title" data-fx="rise">Selected<br>work</h2>
+    <p class="section-sub" data-fx="rise">Five that are worth opening. One of them you can run in this browser.</p>
 
-    <div class="missions__grid">
-      <a class="mission mission--wide rise" href="https://rushabhfulkari.github.io/cadence/">
+    <div class="missions__grid page-grid">
+      <a class="mission mission--wide" data-fx="rise" href="https://rushabhfulkari.github.io/cadence/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/sessions.png" alt=""></span>
           <div>
@@ -265,7 +268,7 @@
         <p class="mission__tags">Flutter · Kotlin · Swift · Pigeon · SQLite · BLE</p>
       </a>
 
-      <div class="mission rise">
+      <div class="mission" data-fx="rise">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/feed.png" alt=""></span>
           <div><p class="mission__id">M-02 · 2025 → now</p><h3>CupidMedia</h3></div>
@@ -285,7 +288,7 @@
         <p class="mission__tags">AdMob · Akamai BMP · Age Signals · Sentry</p>
       </div>
 
-      <a class="mission rise" href="https://www.highlandsbrain.com/">
+      <a class="mission" data-fx="rise" href="https://www.highlandsbrain.com/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/voice.png" alt=""></span>
           <div><p class="mission__id">M-03 · Unico Connect</p><h3>Highlands Brain</h3></div>
@@ -299,7 +302,7 @@
         <p class="mission__tags">Stream SDK · WebRTC · BLoC · platform channels</p>
       </a>
 
-      <a class="mission rise" href="https://www.sergo.com/">
+      <a class="mission" data-fx="rise" href="https://www.sergo.com/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/plans.png" alt=""></span>
           <div><p class="mission__id">M-04 · Bottlecap</p><h3>Sergo</h3></div>
@@ -313,7 +316,7 @@
         <p class="mission__tags">Server-driven forms · Cubit · PDF</p>
       </a>
 
-      <div class="mission rise">
+      <div class="mission" data-fx="rise">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/vault.png" alt=""></span>
           <div><p class="mission__id">M-05</p><h3>Apprintly</h3></div>
@@ -340,9 +343,9 @@
 <!-- ══════════════ DISPATCHES ══════════════ -->
 <section class="dispatches" id="dispatches">
   <div class="wrap">
-    <p class="kicker rise">— dispatches —</p>
-    <h2 class="section-title rise">Things I<br>wrote down</h2>
-    <p class="section-sub rise">
+    <p class="kicker" data-fx="rise">— dispatches —</p>
+    <h2 class="section-title" data-fx="rise">Things I<br>wrote down</h2>
+    <p class="section-sub" data-fx="rise">
       Bugs with receipts, mostly. What building production Flutter with an AI in
       the loop actually costs, and the specific things that broke.
     </p>
@@ -356,14 +359,14 @@
   <span class="web web--tl" aria-hidden="true"></span>
   <span class="web web--br" aria-hidden="true"></span>
   <div class="wrap">
-    <p class="kicker rise">— last page —</p>
-    <h2 class="display display--tone contact__big rise"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
-    <p class="section-sub rise" style="margin-top:26px">
+    <p class="kicker" data-fx="rise">— last page —</p>
+    <h2 class="display display--tone contact__big" data-fx="rise"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
+    <p class="section-sub" data-fx="rise" style="margin-top:26px">
       Looking for a senior Flutter role in the UK or US. If you are building
       something that has to work offline, talk to hardware, or live inside an app
       that already exists — that is the part I like.
     </p>
-    <div class="contact__links rise">
+    <div class="contact__links" data-fx="rise">
       <a class="btn" href="mailto:rushabhfulkari@gmail.com">Email me</a>
       <a class="btn btn--ghost" href="https://github.com/rushabhfulkari">GitHub ↗</a>
       <a class="btn btn--ghost" href="https://www.linkedin.com/in/rushabh-fulkari-b5200b120/">LinkedIn ↗</a>

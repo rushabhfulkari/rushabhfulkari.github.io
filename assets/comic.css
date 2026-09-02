@@ -75,19 +75,16 @@ a { color: inherit; }
 /* Letters filled with printed tone and knocked out with a hard outline —
    the closest CSS gets to comic-art lettering without an image. */
 .display--tone {
-  background-image:
-    radial-gradient(circle at 2px 2px, var(--red) 1.6px, transparent 0),
-    radial-gradient(circle at 4px 5px, var(--ink) 1.2px, transparent 0),
-    linear-gradient(180deg, var(--ink) 0%, var(--red-deep) 100%);
-  background-size: 8px 8px, 9px 9px, 100% 100%;
+  /* A comic page tiled into the letterforms — panels with white gutters,
+     speed lines, Ben-Day dots, a burst and a web corner. Kept as a real file
+     rather than a data URI: an encoding slip in a data URI fails silently,
+     and with `color: transparent` a failed fill means invisible text. */
+  background-image: url("lettering.svg");
+  background-size: clamp(120px, 12vw, 210px);
+  background-position: center;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  /* No stroke on this element. `-webkit-text-stroke` combined with
-     `background-clip: text` makes the engine paint the element's box edge as
-     a stray rectangle beside the last glyph — reproducible, and it survives
-     removing the filter and paint-order. The outline is a layer behind
-     instead: see .display--tone > span::before. */
 }
 
 /* No outline layer, and no -webkit-text-stroke anywhere near this element.
@@ -166,17 +163,10 @@ h2.section-title {
 @media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }
 
 /* ---------- reveal ---------- */
-.rise { opacity: 0; transform: translateY(26px); }
-.rise.in {
-  opacity: 1; transform: none;
-  transition: opacity .7s cubic-bezier(.2,.7,.2,1),
-              transform .7s cubic-bezier(.2,.7,.2,1);
-  transition-delay: var(--d, 0ms);
-}
-@media (prefers-reduced-motion: reduce) {
-  /* Land on the end state, not on nothing. The content still has to be there. */
-  .rise, .rise.in { opacity: 1; transform: none; transition: none; }
-}
+/* Nothing is hidden by the stylesheet. comic.js sets opacity 0 on the
+   elements it is about to animate, so a page whose script never runs is a
+   readable page rather than a blank sheet of cream. */
+[data-fx] { will-change: transform, opacity; }
 
 /* ---------- buttons ---------- */
 .btn {
@@ -528,3 +518,77 @@ section, .hero { position: relative; overflow: hidden; }
 @media (max-width: 620px) {
   .dispatch { grid-template-columns: 48px 1fr; gap: 16px; }
 }
+
+/* ============================================================
+   PINNED HORIZONTAL SECTION
+   The stage is held while the track slides sideways, so vertical
+   scrolling reads as travelling across a comic strip.
+   ============================================================ */
+.pin { position: relative; }
+.pin__stage {
+  position: sticky; top: 0; height: 100svh;
+  display: flex; flex-direction: column; justify-content: center;
+  overflow: hidden;
+}
+.pin__head { padding: 0 var(--gutter) 26px; }
+.pin__track {
+  display: flex; gap: clamp(16px, 2.4vw, 30px);
+  padding-inline: var(--gutter); width: max-content;
+  will-change: transform;
+}
+@media (max-width: 860px) {
+  /* Below tablet the sticky trick fights the address bar, so it degrades to
+     an ordinary horizontal scroller with snap points. */
+  .pin { height: auto !important; }
+  .pin__stage { position: static; height: auto; padding: 0; }
+  .pin__track {
+    width: auto; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding-bottom: 22px; transform: none !important;
+  }
+  .pin__track > * { scroll-snap-align: start; }
+}
+
+/* ============================================================
+   COMIC FURNITURE
+   ============================================================ */
+.bubble {
+  position: relative; background: var(--paper);
+  border: 3px solid var(--ink); border-radius: 16px;
+  padding: 16px 20px; box-shadow: 5px 5px 0 var(--ink);
+  font-family: var(--comic); font-size: clamp(19px, 2.2vw, 27px);
+  line-height: 1.25; max-width: 30ch;
+}
+.bubble::after {
+  content: ''; position: absolute; bottom: -20px; left: 38px;
+  border: 10px solid transparent; border-top-color: var(--ink);
+}
+.bubble::before {
+  content: ''; position: absolute; bottom: -14px; left: 41px; z-index: 1;
+  border: 7px solid transparent; border-top-color: var(--paper);
+}
+.bubble--red { background: var(--red); color: var(--paper); }
+.bubble--red::before { border-top-color: var(--red); }
+
+/* Action lines, for sections that need momentum behind them. */
+.speedlines {
+  position: absolute; inset: 0; pointer-events: none; opacity: .11; z-index: 1;
+  background: repeating-linear-gradient(114deg,
+    var(--ink) 0 2px, transparent 2px 24px);
+  -webkit-mask-image: linear-gradient(90deg, #000, transparent 62%);
+          mask-image: linear-gradient(90deg, #000, transparent 62%);
+}
+
+/* Small spiders, parked in corners and drifting on scroll. */
+.crawler { position: absolute; z-index: 3; pointer-events: none; opacity: .9; }
+
+/* A real comic page: black gutters showing between the panels. */
+.page-grid {
+  background: var(--ink); border: 5px solid var(--ink);
+  display: grid; gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  box-shadow: 10px 10px 0 rgba(20, 17, 13, .22);
+}
+.page-grid > * { box-shadow: none; border: 0; transform: none; margin: 0; }
+
+/* Numbers big enough to read as a splash panel. */
+.stat__n { font-size: clamp(34px, 5.2vw, 62px); }

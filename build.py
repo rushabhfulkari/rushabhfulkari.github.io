@@ -97,7 +97,7 @@ def main():
 
     # --- the blog index -------------------------------------------------
     rows = '\n'.join(
-        f'''      <a class="dispatch rise" href="{p['slug']}.html">
+        f'''      <a class="dispatch" data-fx="rise" href="{p['slug']}.html">
         <span class="dispatch__no">{html.escape(p.get('issue', ''))}</span>
         <span><h3>{html.escape(p['title'])}</h3><p>{html.escape(p['excerpt'])}</p></span>
         <span class="dispatch__date">{p['date']}</span>
@@ -121,9 +121,9 @@ def main():
 <section style="padding-top:clamp(80px,12vh,130px)">
   <div class="wrap">
     <a class="backlink" href="../">← Back to the front page</a>
-    <p class="kicker rise" style="margin-top:26px">— {len(posts)} dispatches —</p>
-    <h2 class="section-title rise">Things I<br>wrote down</h2>
-    <p class="section-sub rise">
+    <p class="kicker" data-fx="rise" style="margin-top:26px">— {len(posts)} dispatches —</p>
+    <h2 class="section-title" data-fx="rise">Things I<br>wrote down</h2>
+    <p class="section-sub" data-fx="rise">
       Bugs with receipts, mostly. What building production Flutter with an AI in
       the loop actually costs, and the specific things that broke.
     </p>
@@ -143,7 +143,7 @@ def main():
 
     # --- the four newest, injected into the front page ------------------
     cards = ''.join(
-        f'''<a class="dispatch rise" href="blog/{p['slug']}.html">'''
+        f'''<a class="dispatch" data-fx="rise" href="blog/{p['slug']}.html">'''
         f'''<span class="dispatch__no">{html.escape(p.get('issue', ''))}</span>'''
         f'''<span><h3>{html.escape(p['title'])}</h3>'''
         f'''<p>{html.escape(p['excerpt'])}</p></span>'''
@@ -156,10 +156,12 @@ def main():
         '  var slot = document.querySelector("[data-posts]");\n'
         '  if (!slot) return;\n'
         f'  slot.innerHTML = {cards!r};\n'
-        '  // Reveal them: comic.js has already run its query by now.\n'
-        '  [].forEach.call(slot.querySelectorAll(".rise"), function (el, i) {\n'
-        '    el.style.setProperty("--d", (i * 70) + "ms");\n'
-        '    setTimeout(function () { el.classList.add("in"); }, 60);\n'
+        '  // Injected after comic.js collected its elements, so these are\n'
+        '  // shown outright rather than waiting for a scroll pass that will\n'
+        '  // never include them.\n'
+        '  [].forEach.call(slot.querySelectorAll("[data-fx]"), function (el) {\n'
+        '    el.style.opacity = "1";\n'
+        '    el.style.transform = "none";\n'
         '  });\n'
         '}());\n')
 
