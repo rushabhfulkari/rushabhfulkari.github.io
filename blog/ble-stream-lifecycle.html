@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLE in Flutter: the reconnect bug you are going to ship — Rushabh Fulkari</title>
+<meta name="description" content="Every packet arriving twice is not a radio problem. It is a subscription you forgot to cancel, and the third reconnect is where you find out.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="BLE in Flutter: the reconnect bug you are going to ship">
+<meta property="og:description" content="Every packet arriving twice is not a radio problem. It is a subscription you forgot to cancel, and the third reconnect is where you find out.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/ble-stream-lifecycle.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-03</span>
+    <span>2026-08-20</span><span>·</span><span>Flutter, BLE, streams, Dart</span>
+  </p>
+  <h1>BLE in Flutter: the reconnect bug you are going to ship</h1>
+  <div class="article__body">
+<p>Bluetooth Low Energy in Flutter looks easy for about a day. You scan, you
+connect, you subscribe to a characteristic, values arrive. Then a real device
+walks into a lift, and you discover that everything interesting about BLE is in
+the failure paths.</p>
+<p>Three things, all of which I got wrong first.</p>
+<h2>1. Discovery is a state, not a spinner</h2>
+<p>Characteristic handles do not exist until the client has walked the
+peripheral's attribute table. Subscribe before discovery finishes and you get an
+error that reads like a hardware fault.</p>
+<p>So the connection is a state machine with a real <code>discovering</code> state in it, not
+a boolean and a loading indicator:</p>
+<pre><code>idle → scanning → connecting → discovering → live
+live → dropped → reconnecting → connecting → …
+</code></pre>
+<p><code>connecting</code> and <code>reconnecting</code> run the same code, and I still keep them
+separate — one is something the user asked for and the other is the app
+recovering from something they did not, and those deserve different words on
+screen.</p>
+<h2>2. The reconnect that doubles every packet</h2>
+<p>This is the one.</p>
+<p>The link drops. You reconnect. You subscribe to the characteristic again. Now
+there are <strong>two</strong> live subscriptions to one characteristic, because nothing
+cancelled the first — and every notification arrives twice. Drop three times and
+every packet arrives four times.</p>
+<p>It does not throw. It does not log. Your chart just gets noisy and your
+battery gets worse, and it took me an embarrassingly long time to work out that
+the strap was fine.</p>
+<p>The fix is trivial once you see it: cancel before you re-subscribe, on every
+path. The reason it is hard to see is that the bug lives in the <em>ownership</em> of a
+subscription rather than in any line of logic.</p>
+<p>So I put the count on screen:</p>
+<blockquote>
+<p><strong>SUBSCRIPTIONS   1</strong></p>
+</blockquote>
+<p>A number a demo can print is a number a test can assert. Mine asserts it stays
+at <code>1</code> across a drop and a recovery, and that a recovered packet lands once
+rather than twice. That single assertion is worth more than the rest of the
+suite.</p>
+<h2>3. <code>await sub.cancel()</code> can hang forever</h2>
+<p>This one is pure Dart and it cost me an afternoon.</p>
+<p><code>StreamSubscription.cancel()</code> returns whatever the stream's <code>onCancel</code> callback
+returns. If that callback returns <code>void</code>, on a single-subscription controller
+that was <strong>never closed</strong>, you get back a future that never completes.</p>
+<pre><code class="language-dart">// Deadlocks. Forever. No error.
+await _notificationSubscription?.cancel();
+</code></pre>
+<p>My disconnect path awaited exactly that, so disconnecting silently did nothing —
+the handler stopped mid-teardown and the state machine never advanced. I found
+it by bisecting the handler with print statements, which is not a proud story.</p>
+<p>Two fixes, and I applied both:</p>
+<ul>
+<li>Any stream source I own returns a real future from <code>onCancel</code> — <code>() async {}</code>
+  rather than <code>() {}</code>. The <code>async</code> is the whole point, so it carries a comment
+  saying so, because a linter will tell you it is unnecessary.</li>
+<li>Teardown paths <strong>do not await cancels they do not own.</strong> The callback still
+  runs synchronously, which is what the bookkeeping depends on; only the future
+  is dropped, and nothing needs it.</li>
+</ul>
+<h2>The seam that makes all of this testable</h2>
+<p>None of the above is testable against real hardware in CI. So the radio is an
+interface — <code>scan</code>, <code>connect</code>, <code>discoverServices</code>, <code>notifications</code>, <code>close</code> —
+with two implementations: the real one over <code>flutter_blue_plus</code>, and a fake.</p>
+<p>The fake is the interesting one. It <strong>speaks the real wire format</strong>. Heart Rate
+Measurement, characteristic <code>0x2A37</code>, is not a number — it is a flags byte that
+says whether the value is 8- or 16-bit and which optional fields follow, so
+every field's offset depends on the flags. RR intervals are in units of
+1/1024 s, not milliseconds; read them as milliseconds and you get a 2.4% error
+that quietly corrupts every HRV figure downstream.</p>
+<p>If the fake just emitted an integer, the parser — the part that actually breaks
+in the field — would be covered by nothing. Because it encodes real packets, a
+test can assert that a truncated payload throws instead of inventing a value.</p>
+<p>Everything with a decision in it lives above the radio interface. The part that
+needs hardware has no decisions in it at all.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

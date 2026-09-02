@@ -1,0 +1,399 @@
+/* ============================================================
+   THE SHIP LOG — a newsprint comic, rendered in CSS.
+   Cream stock, black ink, one red and one blue plate, halftone
+   dots. Everything here is drawn by the browser: there is not a
+   single background image in this file.
+   ============================================================ */
+
+:root {
+  --paper:      #F1EADA;
+  --paper-deep: #E4DAC4;
+  --ink:        #14110D;
+  --ink-soft:   #4A443A;
+  --ink-faint:  #7C7466;
+  --red:        #D42A3C;
+  --red-deep:   #9E1A28;
+  --blue:       #2B4FD8;
+  --lime:       #C9E552;   /* carried over from the app, used sparingly */
+
+  --panel-border: 3px solid var(--ink);
+  --shadow-hard: 6px 6px 0 var(--ink);
+  --shadow-hard-sm: 4px 4px 0 var(--ink);
+
+  --display: 'Archivo Black', 'Arial Black', sans-serif;
+  --comic:   'Bangers', 'Comic Sans MS', cursive;
+  --body:    'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  --gutter: clamp(18px, 5vw, 64px);
+  --measure: 680px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Halftone: two offset dot grids, so it reads as printed tone rather than a
+   regular pattern. Fixed attachment keeps it still while panels scroll over. */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(20,17,13,.10) 1px, transparent 0),
+    radial-gradient(circle at 1px 1px, rgba(212,42,60,.07) 1px, transparent 0);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 4px;
+}
+main, header, footer, .marquee, .assistant { position: relative; z-index: 1; }
+
+a { color: inherit; }
+
+/* ---------- type ---------- */
+.display {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -.02em;
+  line-height: .84;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Letters filled with printed tone and knocked out with a hard outline —
+   the closest CSS gets to comic-art lettering without an image. */
+.display--tone {
+  background-image:
+    radial-gradient(circle at 2px 2px, var(--red) 1.6px, transparent 0),
+    radial-gradient(circle at 4px 5px, var(--ink) 1.2px, transparent 0),
+    linear-gradient(180deg, var(--ink) 0%, var(--red-deep) 100%);
+  background-size: 8px 8px, 9px 9px, 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+  filter: drop-shadow(4px 4px 0 rgba(20, 17, 13, .28));
+}
+
+.kicker {
+  font-family: var(--body);
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.pow {
+  font-family: var(--comic);
+  color: var(--red);
+  letter-spacing: .02em;
+  -webkit-text-stroke: 1.5px var(--ink);
+  paint-order: stroke fill;
+}
+
+/* ---------- panels ---------- */
+.panel {
+  background: var(--paper);
+  border: var(--panel-border);
+  box-shadow: var(--shadow-hard);
+  padding: clamp(18px, 3vw, 30px);
+}
+.panel--tilt-l { transform: rotate(-1.1deg); }
+.panel--tilt-r { transform: rotate(1deg); }
+
+section { padding: clamp(72px, 12vh, 150px) var(--gutter); }
+.wrap { max-width: 1120px; margin: 0 auto; }
+.measure { max-width: var(--measure); }
+
+h2.section-title {
+  font-family: var(--display);
+  font-size: clamp(34px, 7vw, 78px);
+  line-height: .88; text-transform: uppercase; margin: 0 0 8px;
+  letter-spacing: -.02em;
+}
+.section-sub { color: var(--ink-soft); margin: 0 0 40px; max-width: 52ch; }
+
+/* ---------- marquee ---------- */
+.marquee {
+  border-block: var(--panel-border);
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+  padding: 10px 0;
+}
+.marquee--red { background: var(--red); }
+.marquee__track {
+  display: flex; gap: 42px; width: max-content;
+  animation: slide 34s linear infinite;
+  font-family: var(--display); font-size: 15px; letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.marquee--rev .marquee__track { animation-direction: reverse; }
+@keyframes slide { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }
+
+/* ---------- reveal ---------- */
+.rise { opacity: 0; transform: translateY(26px); }
+.rise.in {
+  opacity: 1; transform: none;
+  transition: opacity .7s cubic-bezier(.2,.7,.2,1),
+              transform .7s cubic-bezier(.2,.7,.2,1);
+  transition-delay: var(--d, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Land on the end state, not on nothing. The content still has to be there. */
+  .rise, .rise.in { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--display); text-transform: uppercase; font-size: 14px;
+  letter-spacing: .04em; text-decoration: none;
+  background: var(--red); color: var(--paper);
+  border: var(--panel-border); box-shadow: var(--shadow-hard-sm);
+  padding: 13px 22px;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s ease;
+}
+.btn:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+.btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn--ghost { background: var(--paper); color: var(--ink); }
+.btn--blue { background: var(--blue); color: var(--paper); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100svh; display: flex; flex-direction: column;
+  justify-content: center; padding: 96px var(--gutter) 56px;
+}
+.hero__issue {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  margin-bottom: clamp(16px, 3vh, 36px);
+}
+.stamp {
+  font-family: var(--display); font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; padding: 5px 11px;
+  border: 2px solid var(--ink); background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.stamp--red { background: var(--red); color: var(--paper); }
+.stamp--blue { background: var(--blue); color: var(--paper); }
+
+.hero__name { font-size: clamp(56px, 15.5vw, 210px); }
+.hero__name span { display: block; }
+.hero__tag {
+  margin: clamp(20px, 4vh, 38px) 0 0; max-width: 46ch;
+  font-size: clamp(15px, 1.6vw, 19px); color: var(--ink-soft);
+}
+.hero__tag b { color: var(--ink); }
+.hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+.hero__scroll {
+  margin-top: clamp(28px, 6vh, 64px);
+  font-family: var(--comic); font-size: 20px; color: var(--red);
+  display: flex; align-items: center; gap: 10px;
+}
+.hero__scroll span { animation: bob 1.5s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .hero__scroll span { animation: none; } }
+
+/* The reader, taped to the page. Same print treatment as the app. */
+.tape-print {
+  /* inline-block, not the span default: an inline element ignores width, so
+     the print rendered full-bleed and the tape landed nowhere near a corner. */
+  display: inline-block;
+  position: relative; background: #F8F6F0; padding: 6px;
+  border: 2px solid var(--ink); box-shadow: var(--shadow-hard-sm);
+}
+.tape-print img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.tape-print::before, .tape-print::after {
+  content: ''; position: absolute; width: 44%; height: 11%;
+  background: rgba(233,194,74,.85); border: 1px solid rgba(20,17,13,.25);
+}
+.tape-print::before { top: 0; left: 0; transform: translate(-30%,-38%) rotate(-45deg); }
+.tape-print::after  { bottom: 0; right: 0; transform: translate(30%,38%) rotate(-45deg); }
+
+/* ============================================================
+   ORIGIN — pinned strip of comic panels
+   ============================================================ */
+.origin { background: var(--paper-deep); border-block: var(--panel-border); }
+.origin__grid {
+  display: grid; gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-top: 34px;
+}
+.beat { position: relative; }
+.beat__no {
+  font-family: var(--display); font-size: 12px; letter-spacing: .1em;
+  color: var(--red); margin-bottom: 6px;
+}
+.beat__art {
+  width: 76px; margin-bottom: 14px;
+}
+.beat h3 {
+  font-family: var(--display); text-transform: uppercase;
+  font-size: 17px; margin: 0 0 8px; line-height: 1.15;
+}
+.beat p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+/* ============================================================
+   POWERS — horizontal scroller
+   ============================================================ */
+.rail {
+  display: flex; gap: 20px; overflow-x: auto; padding: 6px 4px 26px;
+  scroll-snap-type: x mandatory; scrollbar-width: thin;
+}
+.rail::-webkit-scrollbar { height: 8px; }
+.rail::-webkit-scrollbar-thumb { background: var(--ink); }
+.rail::-webkit-scrollbar-track { background: var(--paper-deep); }
+.power {
+  flex: 0 0 clamp(230px, 68vw, 300px); scroll-snap-align: start;
+  background: var(--paper); border: var(--panel-border);
+  box-shadow: var(--shadow-hard); padding: 22px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.power:hover { transform: translateY(-5px) rotate(-.6deg); }
+.power__no { font-family: var(--display); font-size: 30px; color: var(--red); line-height: 1; }
+.power h3 { font-family: var(--display); text-transform: uppercase; font-size: 19px; margin: 0; line-height: 1.05; }
+.power p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.power__tags { margin-top: auto; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* ============================================================
+   NUMBERS
+   ============================================================ */
+.numbers { background: var(--ink); color: var(--paper); border-block: var(--panel-border); }
+.numbers h2.section-title { color: var(--paper); }
+.numbers .section-sub { color: #B9B1A2; }
+.stats { display: grid; gap: 2px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); background: #2C271F; border: 2px solid #2C271F; }
+.stat { background: var(--ink); padding: 22px 18px; }
+.stat__n { font-family: var(--display); font-size: clamp(30px, 4.4vw, 48px); line-height: 1; color: var(--lime); }
+.stat__l { margin: 8px 0 0; font-size: 12px; color: #B9B1A2; letter-spacing: .04em; }
+
+/* ============================================================
+   MISSIONS
+   ============================================================ */
+.missions__grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.mission {
+  background: var(--paper); border: var(--panel-border); box-shadow: var(--shadow-hard);
+  padding: 24px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
+}
+.mission:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 var(--ink); }
+.mission__top { display: flex; align-items: flex-start; gap: 14px; }
+.mission__art { width: 62px; flex: none; }
+.mission__id { font-family: var(--display); font-size: 12px; color: var(--red); letter-spacing: .1em; }
+.mission h3 { font-family: var(--display); text-transform: uppercase; font-size: 22px; margin: 4px 0 0; line-height: 1; }
+.mission p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.mission__tags { margin-top: auto; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.mission--wide { grid-column: 1 / -1; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+  border: 2px solid var(--ink); padding: 2px 8px; background: var(--paper);
+}
+.chip--red { background: var(--red); color: var(--paper); }
+.chip--blue { background: var(--blue); color: var(--paper); }
+.chip--lime { background: var(--lime); }
+
+/* ============================================================
+   DISPATCHES (blog)
+   ============================================================ */
+.dispatches { background: var(--paper-deep); border-block: var(--panel-border); }
+.dispatch {
+  display: grid; grid-template-columns: 58px 1fr auto; gap: 18px; align-items: start;
+  padding: 20px 0; border-bottom: 2px solid rgba(20,17,13,.16);
+  text-decoration: none; color: inherit;
+}
+.dispatch:first-of-type { border-top: 2px solid rgba(20,17,13,.16); }
+.dispatch__no { font-family: var(--display); font-size: 13px; color: var(--red); letter-spacing: .08em; padding-top: 4px; }
+.dispatch h3 {
+  font-family: var(--display); text-transform: uppercase; font-size: 20px;
+  margin: 0 0 6px; line-height: 1.08;
+  transition: color .18s ease;
+}
+.dispatch:hover h3 { color: var(--red); }
+.dispatch p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.dispatch__date { font-size: 11px; color: var(--ink-faint); white-space: nowrap; padding-top: 6px; }
+@media (max-width: 620px) {
+  .dispatch { grid-template-columns: 44px 1fr; }
+  .dispatch__date { display: none; }
+}
+
+/* ============================================================
+   CONTACT + FOOTER
+   ============================================================ */
+.contact { text-align: left; }
+.contact__big { font-size: clamp(48px, 13vw, 168px); }
+.contact__links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+footer {
+  border-top: var(--panel-border); background: var(--ink); color: #B9B1A2;
+  padding: 30px var(--gutter); font-size: 12px;
+}
+footer a { color: var(--paper); }
+
+/* ============================================================
+   ASSISTANT
+   ============================================================ */
+.assistant { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: flex; align-items: flex-end; gap: 10px; }
+.assistant__bubble {
+  max-width: 260px; background: var(--paper); border: var(--panel-border);
+  box-shadow: var(--shadow-hard-sm); padding: 12px 14px; font-size: 12.5px;
+  position: relative; transform-origin: bottom right;
+  animation: pop .45s cubic-bezier(.34,1.56,.64,1);
+}
+.assistant__bubble::after {
+  content: ''; position: absolute; right: -11px; bottom: 16px;
+  border: 8px solid transparent; border-left-color: var(--ink);
+}
+@keyframes pop { from { opacity: 0; transform: scale(.7) translateY(10px); } }
+.assistant__btn {
+  width: 56px; height: 56px; flex: none; border-radius: 50%;
+  border: var(--panel-border); background: var(--red); cursor: pointer;
+  box-shadow: var(--shadow-hard-sm); padding: 4px; overflow: hidden;
+}
+.assistant__btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.assistant__btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+@media (prefers-reduced-motion: reduce) { .assistant__bubble { animation: none; } }
+@media (max-width: 520px) { .assistant__bubble { display: none; } }
+
+/* ============================================================
+   ARTICLE (blog post pages)
+   ============================================================ */
+.article { max-width: 720px; margin: 0 auto; padding: clamp(90px,12vh,140px) var(--gutter) 90px; }
+.article h1 { font-family: var(--display); font-size: clamp(30px,5.4vw,54px); line-height: .96; text-transform: uppercase; margin: 14px 0 16px; letter-spacing: -.02em; }
+.article__meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+.article__body { font-size: 15.5px; line-height: 1.85; }
+.article__body h2 { font-family: var(--display); text-transform: uppercase; font-size: 24px; margin: 44px 0 12px; line-height: 1.1; }
+.article__body h3 { font-family: var(--display); text-transform: uppercase; font-size: 18px; margin: 32px 0 10px; }
+.article__body p { margin: 0 0 18px; }
+.article__body ul, .article__body ol { margin: 0 0 18px; padding-left: 22px; }
+.article__body li { margin-bottom: 8px; }
+.article__body strong { background: linear-gradient(transparent 62%, rgba(201,229,82,.65) 62%); }
+.article__body blockquote {
+  margin: 24px 0; padding: 14px 18px; border-left: 5px solid var(--red);
+  background: var(--paper-deep); font-family: var(--comic); font-size: 21px; line-height: 1.35;
+}
+.article__body pre {
+  background: var(--ink); color: #E9E4D8; padding: 16px 18px; overflow-x: auto;
+  border: var(--panel-border); box-shadow: var(--shadow-hard-sm); font-size: 12.5px; line-height: 1.6;
+  margin: 0 0 22px;
+}
+.article__body code { font-family: var(--body); font-size: 13px; background: var(--paper-deep); padding: 1px 5px; border: 1px solid rgba(20,17,13,.2); }
+.article__body pre code { background: none; border: 0; padding: 0; color: inherit; }
+.article__body table { width: 100%; border-collapse: collapse; margin: 0 0 22px; font-size: 13.5px; }
+.article__body th, .article__body td { border: 2px solid var(--ink); padding: 8px 10px; text-align: left; }
+.article__body th { background: var(--ink); color: var(--paper); font-family: var(--display); text-transform: uppercase; font-size: 11px; letter-spacing: .06em; }
+.article__body a { color: var(--red); }
+.backlink { font-family: var(--display); text-transform: uppercase; font-size: 12px; letter-spacing: .08em; text-decoration: none; }
+.backlink:hover { color: var(--red); }

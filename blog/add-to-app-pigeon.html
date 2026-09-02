@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add-to-app — one Flutter screen inside Kotlin and Swift — Rushabh Fulkari</title>
+<meta name="description" content="Nobody rewrites twelve years of native code for one screen. The interesting question is what it costs to drop Flutter into an app that already exists — and the answer is one number.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="Add-to-app — one Flutter screen inside Kotlin and Swift">
+<meta property="og:description" content="Nobody rewrites twelve years of native code for one screen. The interesting question is what it costs to drop Flutter into an app that already exists — and the answer is one number.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/add-to-app-pigeon.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-04</span>
+    <span>2026-08-16</span><span>·</span><span>Flutter, add-to-app, Pigeon, Kotlin, Swift</span>
+  </p>
+  <h1>Add-to-app — one Flutter screen inside Kotlin and Swift</h1>
+  <div class="article__body">
+<p>An airline's app is native and always will be. Twelve years of Kotlin and Swift
+do not get rewritten because the new boarding pass would be nicer in Flutter. So
+the realistic question is not <em>migrate or not</em> — it is <strong>what does it cost to
+put one Flutter screen inside the app they already have.</strong></p>
+<p>I built exactly that: a Flutter module, a plain Kotlin host, a plain UIKit host,
+and a generated bridge. Both hosts build. Here is what mattered.</p>
+<h2>The engine is the entire performance story</h2>
+<p>Starting a <code>FlutterEngine</code> costs a few hundred milliseconds. That is the whole
+reputation problem — paid on tap, it is a blank screen the user watches, and
+embedded Flutter feels bolted on. Paid once at launch, it is invisible.</p>
+<p>So both hosts warm one engine and hand it to every Flutter route after that:</p>
+<pre><code class="language-kotlin">override fun onCreate() {
+  super.onCreate()
+  Handler(Looper.getMainLooper()).post { warmEngine() }
+}
+
+private fun warmEngine() {
+  val engine = FlutterEngine(this)
+  engine.dartExecutor.executeDartEntrypoint(
+    DartExecutor.DartEntrypoint.createDefault()
+  )
+  FlutterEngineCache.getInstance().put(CACHED_ENGINE_ID, engine)
+}
+</code></pre>
+<p>Note where it is <strong>not</strong>: inside <code>Application.onCreate</code> itself. That runs on
+every cold start, including the launches that never open the Flutter route at
+all, and paying for an engine those users never see is how a native app gets
+slower by adopting Flutter. Posting it puts the work after the first native
+frame.</p>
+<p>iOS is the same decision with one extra line — <code>GeneratedPluginRegistrant</code>
+registers against the <strong>engine</strong>, not the app. A cached engine that skips it
+looks fine until the first plugin call quietly returns nothing.</p>
+<p>I put both paths in the demo, cached and cold, so the difference is something
+you can feel rather than something a README asserts. It is roughly 780 ms
+against 40 ms.</p>
+<h2>Generate the bridge; do not hand-write it</h2>
+<p>A <code>MethodChannel</code> puts every method name and every field name somewhere the
+compiler cannot see:</p>
+<pre><code class="language-dart">await channel.invokeMethod('getProfile');  // typo → null, at runtime, on a device
+</code></pre>
+<p>Rename one side and the other returns <code>null</code> — in a build you already shipped.</p>
+<p><a href="https://pub.dev/packages/pigeon">Pigeon</a> takes one Dart schema and generates
+the Dart, the Kotlin <strong>and</strong> the Swift:</p>
+<pre><code class="language-dart">@HostApi()
+abstract class SessionHostApi {
+  @async HostProfile getProfile();
+  void logEvent(String name, Map&lt;String, String&gt; parameters);
+  void dismiss();
+}
+</code></pre>
+<p>The same rename is now a compile error in three languages. The generator writes
+straight into both host projects, which is deliberate — a generated file that
+has to be copied by hand is a generated file that drifts.</p>
+<p>One detail worth stealing: mark anything that touches a keychain or a database
+<code>@async</code> in the schema even if your first implementation answers immediately.
+Otherwise you have taught every future implementer that blocking the platform
+thread is fine here.</p>
+<h2>Ownership is the actual hard part</h2>
+<p>The plumbing is a weekend. Agreeing which side owns what is what costs a team a
+month when it is discovered late.</p>
+<p><strong>The host owns navigation.</strong> Flutter calls <code>dismiss()</code> and <em>asks</em>. A module
+that pops native screens itself breaks the next time the host reorganises them —
+and it will.</p>
+<p><strong>The host owns identity.</strong> The embedded screen reads a profile over the bridge
+rather than running a second login. Two session stores for one user is a support
+ticket generator.</p>
+<p><strong>The host owns analytics.</strong> Two SDKs pointed at one backend means two session
+ids and two sets of consent state to keep in step, and one of them will drift.</p>
+<p><strong>The look is shared, and that is the point.</strong> My module depends on the same
+design-token package the standalone app uses. Embedded Flutter is only worth its
+integration cost if it shares something real with the app it came from, and it is
+the only reason the screen does not announce itself as a foreign body the moment
+it appears.</p>
+<h2>One Android trap</h2>
+<p><code>FlutterActivity.withCachedEngine()</code> builds an intent targeting
+<code>FlutterActivity</code> <strong>itself</strong>. Subclass it, use the inherited helper, and you
+launch the base activity — none of your engine configuration runs, and the
+screen comes up empty with no error. Construct the builder against your own
+class:</p>
+<pre><code class="language-kotlin">CachedEngineIntentBuilder(InsightsActivity::class.java, CACHED_ENGINE_ID)
+  .build(context)
+</code></pre>
+<p>Two hours, that one.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

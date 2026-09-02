@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I built a ten-feature Flutter app with an AI. Here is what it actually cost. — Rushabh Fulkari</title>
+<meta name="description" content="The demo videos show a prompt and a finished app. What they leave out is the four hours I spent on a socket table, the crash that only happened on a real phone, and the accessibility bug the AI wrote and then caught.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="I built a ten-feature Flutter app with an AI. Here is what it actually cost.">
+<meta property="og:description" content="The demo videos show a prompt and a finished app. What they leave out is the four hours I spent on a socket table, the crash that only happened on a real phone, and the accessibility bug the AI wrote and then caught.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/ten-features-with-claude.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-01</span>
+    <span>2026-08-28</span><span>·</span><span>AI, Flutter, Claude, engineering</span>
+  </p>
+  <h1>I built a ten-feature Flutter app with an AI. Here is what it actually cost.</h1>
+  <div class="article__body">
+<p>I spent a few weeks building <strong>Cadence</strong>, a Flutter app with ten features in it —
+offline-first sync, BLE, a server-driven UI, an LLM agent loop, an accessibility
+audit, a screen embedded in native Kotlin and Swift hosts. Most of it was
+written with Claude sitting in the loop.</p>
+<p>I want to write down what that was actually like, because the demo videos are
+all prompt-in, app-out, and that is not the job.</p>
+<h2>The part that works better than I expected</h2>
+<p>Volume. Not quality — volume.</p>
+<p>There is a category of work in Flutter that is <em>entirely</em> mechanical and
+<em>entirely</em> necessary: the immutable state class with its <code>copyWith</code> and its
+<code>operator ==</code> and its <code>hashCode</code>; the sealed event hierarchy; the four
+<code>AnimatedContainer</code> properties that need the same duration. It is not hard. It
+is just long, and being bored while writing it is how you end up with a
+<code>hashCode</code> that forgot a field.</p>
+<p>An AI writes that correctly and instantly, every time. That alone moved my
+throughput more than any editor plugin I have installed in five years.</p>
+<p>The second thing is the one nobody mentions: <strong>it writes the test you were
+going to skip</strong>. Not the happy path — you would have written that. The one
+where the payload is truncated, the one where the network dies between the
+write and the acknowledgement. I would ask for "tests for this parser" and get
+back a case for a two-byte packet that claims to be four bytes long, which is a
+real thing a Bluetooth strap does and which I had not thought about at 11pm.</p>
+<h2>The part that does not work</h2>
+<p>It cannot see.</p>
+<p>I built four consecutive rounds of visual redesign — a whole design system, a
+board of feature tiles, photo frames, entrance animations — verified entirely by
+<code>flutter analyze</code> and a passing test suite, and every one of those rounds had
+something visibly wrong in it that no test could catch. The frames were
+positioned by hand and I had no idea whether they overlapped. I found out when I
+finally opened the thing.</p>
+<p>The corollary: <strong>a passing test suite is not a rendered screen</strong>, and an AI that
+tells you "270 tests, analyze clean" is telling you the truth about something
+that is not the question you asked.</p>
+<p>It also cannot feel a device. Two bugs from this project:</p>
+<ul>
+<li>A <code>DbCard</code> with a coloured left edge crashed on Impeller. <code>Border</code> refuses a
+  <code>borderRadius</code> unless every side shares a colour, and Impeller asserts on it
+  during paint. The web build rendered it happily. It only died on a real
+  Android phone.</li>
+<li>A performance demo that was supposed to show jank measured <strong>27 microseconds</strong>
+  of work per row. Twenty rows was 0.5 ms — three percent of a frame. The demo
+  proved the opposite of its own claim, and it took a screenshot from a real
+  device to notice.</li>
+</ul>
+<h2>The bugs it wrote, and one it caught</h2>
+<p>Both worth recording honestly.</p>
+<p><strong>It wrote this one.</strong> Every entrance animation on the site faded content in
+with <code>Opacity</code>. <code>Opacity</code> at exactly <code>0</code> <strong>drops its subtree from the semantics
+tree</strong> — so for as long as the fade ran, a screen-reader user had nothing there
+at all, and a staggered list appeared to them one item at a time. In an app
+whose sixth feature is a WCAG audit. The fix is one property,
+<code>alwaysIncludeSemantics: true</code>, and the lesson is that the fade is decoration
+and has no business gating what gets announced.</p>
+<p><strong>It caught this one</strong>, and I would not have. Writing an offline outbox, I used
+<code>INSERT OR REPLACE</code> to upsert a row. SQLite implements that as a <em>delete</em>
+followed by an insert — so it fires <code>ON DELETE CASCADE</code>, and every queued change
+attached to that row silently vanished. The fix is
+<code>ON CONFLICT(id) DO UPDATE</code>. That is a genuinely obscure piece of SQLite
+behaviour and it came up because the AI wrote a test that pushed two edits to
+one record and watched the first disappear.</p>
+<h2>The four hours I will not get back</h2>
+<p>At one point <code>flutter test</code> started failing with
+<code>SocketException: Can't assign requested address</code> on <code>127.0.0.1</code>. Not one
+test — every test, on load.</p>
+<p>It was not the code. Running the full suite takes loopback <code>TIME_WAIT</code> from 43
+to <strong>16,309</strong> sockets against a 16,384-port ephemeral range, and with an
+emulator and <code>adb</code> running it never drains. I had exhausted the machine's ports
+by running the tests too many times.</p>
+<p>No amount of prompting finds that. You find it with <code>netstat</code>, and you find it
+by being suspicious that "all 25 test files fail identically at load" is not
+what a code bug looks like.</p>
+<h2>What I actually changed about how I work</h2>
+<ol>
+<li><strong>Ask for the seam, not the feature.</strong> "Write me a BLE screen" gets you
+   something coupled to hardware. "Write me a <code>BleRadio</code> interface, a fake that
+   speaks the real GATT wire format, and the screen on top" gets you something
+   that runs in CI. The second prompt is barely longer and the output is a
+   different category of thing.</li>
+<li><strong>Make it write the limitation down.</strong> Every security control in Cadence has
+   a <code>limitation</code> field, and a test fails if one is empty. Certificate pinning
+   does not stop a rooted device. A biometric gate is authorisation, not
+   encryption. A model will happily describe what a control does; you have to
+   ask what it does not.</li>
+<li><strong>Verify at the right altitude.</strong> Analyzer for syntax. Tests for logic.
+   <em>Your own eyes</em> for anything a person will look at. I collapsed the third
+   category into the second for four rounds and paid for it.</li>
+</ol>
+<p>The honest summary: it made me roughly twice as fast at the parts of Flutter
+that are typing, roughly no faster at the parts that are judgement, and
+noticeably better at the part I used to skip, which is testing the ugly case.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

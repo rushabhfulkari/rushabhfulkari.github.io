@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline-first sync in Flutter, and the bug that ate my queue — Rushabh Fulkari</title>
+<meta name="description" content="An outbox is twenty lines. The interesting part is what happens on the fourth retry, when the server has moved on and the app has been killed twice.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="Offline-first sync in Flutter, and the bug that ate my queue">
+<meta property="og:description" content="An outbox is twenty lines. The interesting part is what happens on the fourth retry, when the server has moved on and the app has been killed twice.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/offline-first-outbox.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-02</span>
+    <span>2026-08-24</span><span>·</span><span>Flutter, SQLite, offline, architecture</span>
+  </p>
+  <h1>Offline-first sync in Flutter, and the bug that ate my queue</h1>
+  <div class="article__body">
+<p>Every "offline-first Flutter" tutorial I have read stops at the same place: it
+caches a GET, shows the cache when the network is down, and calls it offline
+support. That is offline <em>reading</em>. The hard half is offline <strong>writing</strong>, and it
+is hard for reasons that only show up on the fourth retry.</p>
+<p>Here is the shape I settled on, and the three things that actually bit.</p>
+<h2>The shape</h2>
+<p>Two tables. One holds the records as the device believes them. One is an
+<strong>outbox</strong> — an append-only queue of changes that have not reached the server
+yet, each with a status, an attempt count, and the record version the change was
+based on.</p>
+<p>The UI never waits for the network. A write lands in the record table and the
+outbox in one transaction, the screen updates, and a drain runs whenever it can.
+That is the whole idea, and it is genuinely about twenty lines.</p>
+<p>Then reality arrives.</p>
+<h2>Bug one: <code>INSERT OR REPLACE</code> deletes</h2>
+<p>I used the obvious upsert:</p>
+<pre><code class="language-sql">INSERT OR REPLACE INTO records (id, title, version) VALUES (?, ?, ?)
+</code></pre>
+<p>SQLite implements <code>OR REPLACE</code> as a <strong>delete followed by an insert</strong>. Not an
+update — a delete. So it fires <code>ON DELETE CASCADE</code>, and every outbox row that
+pointed at that record went with it. Save a record twice offline, and the first
+change was gone with no error anywhere.</p>
+<pre><code class="language-sql">INSERT INTO records (id, title, version) VALUES (?, ?, ?)
+  ON CONFLICT(id) DO UPDATE SET title = excluded.title, version = excluded.version
+</code></pre>
+<p>I now have a contract test that both my SQLite store and my in-memory store have
+to pass: <em>write the same record twice and the queue still has both entries.</em>
+Anything that claims to be a store runs it.</p>
+<h2>Bug two: two offline edits fight each other</h2>
+<p>Edit a record offline. Edit it again. Both entries are in the queue, and both
+carry the version they were based on — say <code>v3</code>.</p>
+<p>The first one pushes. The server accepts it and the record becomes <code>v4</code>. The
+second one pushes, still claiming <code>v3</code>, and the server correctly rejects it as
+stale.</p>
+<p>The conflict is real, but it is <em>my own change conflicting with my own change</em>,
+which is not a decision any user should be asked to make. The fix is a rebase:
+after a successful push, walk the rest of the queue and bump any later entry for
+that record to the version the server just handed back. Genuine conflicts —
+someone editing on another device — still surface. Self-conflicts do not.</p>
+<h2>Bug three: the fake server does not survive a restart</h2>
+<p>This one is a testing bug that looks like a product bug.</p>
+<p>SQLite outlives the process. My fake server was an in-memory map, and it did
+not. So on relaunch every queued change pushed a version the "server" had never
+heard of, and the app produced a conflict for every record in the database.</p>
+<pre><code>Null check operator used on a null value
+  fake_sync_server.dart:80
+</code></pre>
+<p>The fix is two lines — treat a missing server copy as a create, and seed the
+fake from the store on open — but the lesson is broader: <strong>a fake with a
+different lifetime from the real thing produces bugs that are entirely yours.</strong></p>
+<h2>Backoff, and the bit people skip</h2>
+<p>Retry with exponential backoff, a ceiling, and a bounded attempt count. The
+ceiling matters more than the doubling: without one you reach delays of minutes
+by attempt ten, and the device has been back on wifi for most of them.</p>
+<p>The part usually skipped is <strong>classification</strong>. These are not the same failure:</p>
+<ul>
+<li>the request never reached the server → retry, and it costs nothing</li>
+<li>the server rejected it as stale → a conflict, needs a decision</li>
+<li>the server rejected it as malformed → retrying forever is a bug</li>
+</ul>
+<p>A queue that treats all three as "failed, try again" is a queue that will spin on
+a poisoned entry until someone clears app data.</p>
+<h2>What I would tell myself a month ago</h2>
+<p>Write the conflict rule down <em>before</em> the code. Mine is one sentence — <em>last
+write wins, unless the base version is stale, in which case the user chooses and
+their choice rebases the rest of the queue</em> — and having it written meant the
+implementation had something to be checked against instead of being its own
+specification.</p>
+<p>And test the ugly path. Not "it syncs" — <em>it syncs, after the app was killed
+mid-flight, with two queued edits, one of which the server has already seen.</em></p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

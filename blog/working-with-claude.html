@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I actually work with Claude on production Flutter — Rushabh Fulkari</title>
+<meta name="description" content="Not prompt tricks. The three habits that changed my output, and the one place I stopped trusting it entirely.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="How I actually work with Claude on production Flutter">
+<meta property="og:description" content="Not prompt tricks. The three habits that changed my output, and the one place I stopped trusting it entirely.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/working-with-claude.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-07</span>
+    <span>2026-08-02</span><span>·</span><span>AI, Claude, Flutter, workflow</span>
+  </p>
+  <h1>How I actually work with Claude on production Flutter</h1>
+  <div class="article__body">
+<p>I have shipped a lot of Flutter with an AI in the loop over the last year —
+production work across 34 app flavours, and a ten-feature reference app built
+almost entirely that way. What follows is not a prompt library. It is the small
+number of habits that actually changed the output.</p>
+<h2>Ask for the seam, not the feature</h2>
+<p>The single highest-leverage change I made.</p>
+<blockquote>
+<p>"Write me a BLE screen that shows heart rate."</p>
+</blockquote>
+<p>gets you a widget with <code>flutter_blue_plus</code> calls inside it. It works on your
+desk and is untestable forever.</p>
+<blockquote>
+<p>"Write me a <code>BleRadio</code> interface — scan, connect, discover, notifications,
+close. Then a fake that speaks the real 0x2A37 wire format, a real one over
+flutter_blue_plus, and the screen on top of the interface."</p>
+</blockquote>
+<p>gets you something that runs in CI, where "what happens on the third dropped
+connection" is a two-line test setup instead of an afternoon with a strap and a
+microwave oven.</p>
+<p>Same feature. Barely longer prompt. Completely different category of artefact.
+Models are extremely good at producing whatever <em>shape</em> you name, and most
+people name the feature when they could name the architecture.</p>
+<h2>Make it write down what it does not do</h2>
+<p>Ask a model what a control does and it will tell you enthusiastically. Ask what
+it does not cover and you get the sentence that actually matters.</p>
+<p>Every security control in my reference app carries a <code>limitation</code> field, and a
+test fails if one is empty:</p>
+<ul>
+<li><strong>Encrypted storage</strong> — nothing survives a jailbroken or rooted device.</li>
+<li><strong>Certificate pinning</strong> — a rotation hazard; a pin that outlives its key
+  bricks the client.</li>
+<li><strong>Biometric gate</strong> — authorisation, not encryption. The OS still holds the key.</li>
+</ul>
+<p>A control described only by what it stops reads as a guarantee, and a team that
+believes the wrong thing about a control stops looking for the gap it leaves.
+This habit has caught more real design problems for me than any code review
+checklist.</p>
+<h2>Let it write the test you were going to skip</h2>
+<p>You would have written the happy path. You would not, at 11pm, have written the
+one where the packet claims four bytes and carries two.</p>
+<p>This is where the leverage is highest, because it is the work most likely to be
+skipped under deadline and the work where skipping is most expensive. Some real
+ones from the last month, all of which found something:</p>
+<ul>
+<li>A truncated GATT payload <strong>throws</strong> rather than inventing a value.</li>
+<li>Two offline edits to one record, where the server has already accepted the
+  first.</li>
+<li>A denied biometric prompt <strong>never touched the vault</strong> — asserting the <em>order</em>
+  of the gate and the read, not just the outcome.</li>
+<li>Every declared image asset is really in the bundle.</li>
+</ul>
+<p>That last one is a two-line test that turns a typo into a red build instead of a
+blank square someone notices in a screenshot three weeks later.</p>
+<h2>The place I stopped trusting it</h2>
+<p><strong>It cannot see.</strong></p>
+<p>I did four consecutive rounds of visual redesign verified entirely by the
+analyzer and a passing test suite, and every round had something visibly wrong
+in it. Frames positioned by hand that I could not tell overlapped. A set of
+generated avatars where half the faces were, frankly, miserable — the default
+expression range includes <code>concerned</code>, <code>tired</code> and <code>veryAngry</code>, and nothing in a
+test suite has an opinion about that.</p>
+<p>Two device-only bugs from the same project:</p>
+<ul>
+<li>A card with a coloured left edge crashed on Impeller and rendered fine on web.</li>
+<li>A performance demo that measured 27 <strong>microseconds</strong> of work and therefore
+  proved the opposite of its own claim.</li>
+</ul>
+<p>So the rule I now hold: <strong>analyzer for syntax, tests for logic, my own eyes for
+anything a person will look at.</strong> I collapsed that third category into the
+second for a month and paid for it in rework.</p>
+<h2>The unglamorous one: make it explain the decision, not the code</h2>
+<p>Comments that restate the code are noise. The comment worth having says why the
+obvious thing is wrong:</p>
+<pre><code class="language-dart">// Pop, don't go. `go` replaces the stack, which tears the list down and
+// rebuilds it — losing the reader's scroll position every time they open a
+// feature and come back.
+onTap: () =&gt; context.canPop() ? context.pop() : context.go('/'),
+</code></pre>
+<p>I ask for that explicitly, every time, and it does two things. It makes the code
+readable by someone who was not there. And it makes the model commit to a
+<em>reason</em>, which is the fastest way to find out that it does not have one.</p>
+<p>When it cannot produce a reason, that is my signal to go and look properly.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

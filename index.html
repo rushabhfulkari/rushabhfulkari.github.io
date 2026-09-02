@@ -1,289 +1,346 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rushabh Fulkari — Senior Flutter Developer</title>
-<meta name="description" content="Senior Flutter developer. Five years building production cross-platform apps serving 60M+ users across 34 flavours.">
-<meta name="theme-color" content="#000000">
-
+<meta name="description" content="Senior Flutter developer. Five years shipping production cross-platform apps — 34 app flavours, 60M+ members, 180 countries. Currently at CupidMedia.">
+<meta name="theme-color" content="#F1EADA">
 <meta property="og:title" content="Rushabh Fulkari — Senior Flutter Developer">
-<meta property="og:description" content="Five years building production Flutter apps serving 60M+ users across 34 flavours. Currently at CupidMedia.">
+<meta property="og:description" content="34 app flavours. 60M+ members. 180 countries. Five years of production Flutter, written down.">
 <meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
 <meta property="og:url" content="https://rushabhfulkari.github.io/">
-<meta name="twitter:card" content="summary">
-
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
 <link rel="apple-touch-icon" href="art/app_icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-
-<!-- Applied before first paint, so a returning visitor who chose light does
-     not get a frame of black first. -->
-<script>
-  try {
-    var saved = localStorage.getItem('theme');
-    var wants = saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    document.documentElement.dataset.theme = wants;
-  } catch (e) { /* private mode; the dark default stands */ }
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/comic.css">
 </head>
-
 <body>
-<main>
 
-  <header class="masthead reveal">
-    <img class="masthead__avatar" src="art/tomas.png" alt="">
-    <div class="masthead__id">
-      <p class="masthead__name">Rushabh Fulkari</p>
-      <p class="masthead__role">Senior Flutter Developer</p>
+<!-- ══════════════ HERO ══════════════ -->
+<header class="hero">
+  <div class="wrap" style="width:100%">
+    <div class="hero__issue rise">
+      <span class="stamp stamp--red">Issue #001</span>
+      <span class="stamp">The Ship Log</span>
+      <span class="stamp stamp--blue">Est. 2021</span>
+      <span class="kicker">Bengaluru · India</span>
     </div>
-    <button class="toggle" type="button" id="theme" aria-label="Switch theme">
-        <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
-        </svg>
-        <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
-          <circle cx="12" cy="12" r="4.2"/>
-          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
-        </svg>
-      </button>
-  </header>
 
-  <p class="intro reveal">
-    I build production Flutter apps. For the last year that has meant
-    <strong>34 dating apps at CupidMedia</strong> serving 60M+ members in 180
-    countries — ad monetisation built from zero, age-verification compliance
-    across four jurisdictions, Akamai bot protection, and the Sentry migration.
-    Five years in, across VoIP, e-commerce and manufacturing before that.
-  </p>
+    <h1 class="display display--tone hero__name" data-parallax>
+      <span>Rushabh</span><span>Fulkari</span>
+    </h1>
 
-  <p class="intro reveal" style="margin-top:18px">
-    Looking for a senior Flutter role in the UK or US.
-    <a href="rushabh-fulkari-cv.pdf">CV (PDF)</a> ·
-    <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a>
-  </p>
+    <p class="hero__tag rise">
+      Senior Flutter developer. I ship <b>34 app flavours from one codebase</b>
+      to 60&nbsp;million people in 180 countries — and I write down what broke on
+      the way.
+    </p>
 
-  <h2 class="reveal">Selected work</h2>
+    <div class="hero__cta rise">
+      <a class="btn" href="#missions">Read the missions</a>
+      <a class="btn btn--ghost" href="#dispatches">Dispatches</a>
+      <a class="btn btn--ghost" href="rushabh-fulkari-cv.pdf">CV / PDF</a>
+    </div>
 
-  <a class="row reveal" href="https://rushabhfulkari.github.io/cadence/">
-    <span class="row__art"><span class="frame frame--taped" style="--tilt:-1.4deg;width:64px"><img src="art/sessions.png" alt=""></span></span>
-    <span class="row__body">
-      <span class="row__head">
-        <span class="row__name">Cadence</span><span class="row__arrow">→</span>
-        <span class="row__meta">2026</span>
-      </span>
-      <span class="row__note">
-        A Flutter reference app built to be read as much as run: ten
-        production-grade features in one codebase, each with the trade-off it
-        makes written down beside the working code. Offline-first sync, BLE
-        GATT, an LLM agent loop, server-driven UI, a WCAG AA audit, and one
-        screen embedded in Kotlin and Swift hosts over Pigeon.
-      </span>
-      <span class="row__tags">300 tests · zero analyzer issues · CI green on every push</span>
-      <span class="links">
-        <span class="pill">Live demo</span>
-        <span class="pill">Flutter</span>
-        <span class="pill">Kotlin</span>
-        <span class="pill">Swift</span>
-      </span>
-    </span>
-  </a>
+    <p class="hero__scroll rise">Scroll <span>↓</span></p>
+  </div>
+</header>
 
-  <div class="row reveal">
-    <span class="row__art"><span class="frame" style="--tilt:1.2deg;width:64px"><img src="art/coach.png" alt=""></span></span>
-    <div class="row__body">
-      <div class="row__head">
-        <span class="row__name" style="text-decoration:none">CupidMedia</span>
-        <span class="row__meta">May 2025 — now</span>
+<div class="marquee">
+  <div class="marquee__track">
+    <span>Flutter ✦</span><span>Dart ✦</span><span>BLoC ✦</span><span>Platform channels ✦</span>
+    <span>Offline-first ✦</span><span>BLE ✦</span><span>Add-to-app ✦</span><span>Pigeon ✦</span>
+    <span>Kotlin ✦</span><span>Swift ✦</span><span>CI/CD ✦</span><span>Shipping non-stop ✦</span>
+  </div>
+</div>
+
+<!-- ══════════════ ORIGIN ══════════════ -->
+<section class="origin" id="origin">
+  <div class="wrap">
+    <p class="kicker rise">Page 1 — origin story</p>
+    <h2 class="section-title rise">An ordinary<br>codebase…</h2>
+    <p class="section-sub rise">
+      …until you multiply it by thirty-four. Five years, four companies, and one
+      consistent lesson: everything that is a shortcut at one app is a release
+      train at thirty-four.
+    </p>
+
+    <div class="origin__grid">
+      <article class="beat panel panel--tilt-l rise">
+        <p class="beat__no">01 / 04</p>
+        <span class="tape-print beat__art"><img src="art/log.png" alt=""></span>
+        <h3>Freelance, 2021</h3>
+        <p>Six apps across crypto, fashion, logistics and automotive. Learned to ship before learning to architect — the right order, it turns out.</p>
+      </article>
+
+      <article class="beat panel panel--tilt-r rise">
+        <p class="beat__no">02 / 04</p>
+        <span class="tape-print beat__art"><img src="art/plans.png" alt=""></span>
+        <h3>Bottlecap &amp; Fastenal</h3>
+        <p>Social, dating and e-commerce, then manufacturing tooling. A form builder that renders itself from API config — my first taste of server-driven UI.</p>
+      </article>
+
+      <article class="beat panel panel--tilt-l rise">
+        <p class="beat__no">03 / 04</p>
+        <span class="tape-print beat__art"><img src="art/voice.png" alt=""></span>
+        <h3>Unico Connect</h3>
+        <p>Audio-video calling on the Stream SDK. Call state that survives the app lifecycle, background handling, and reconnection through real network drops.</p>
+      </article>
+
+      <article class="beat panel panel--tilt-r rise">
+        <p class="beat__no">04 / 04</p>
+        <span class="tape-print beat__art"><img src="art/coach.png" alt=""></span>
+        <h3>CupidMedia, now</h3>
+        <p>34 flavours, 60M members. Ad monetisation built from zero, age-verification compliance in four jurisdictions, Akamai bot protection, the Sentry migration.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ POWERS ══════════════ -->
+<section id="powers">
+  <div class="wrap">
+    <p class="kicker rise">— what I actually do —</p>
+    <h2 class="section-title rise">My<br>powers</h2>
+    <p class="section-sub rise">Drag sideways. ← no wait, →</p>
+
+    <div class="rail">
+      <article class="power rise">
+        <p class="power__no">01</p>
+        <h3>Cross-platform<br>architecture</h3>
+        <p>Clean architecture and BLoC across 34 flavours from one codebase. Multi-flavour infrastructure that does not special-case its way into a corner.</p>
+        <p class="power__tags">Flutter · Dart · BLoC · GetIt · built_value</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">02</p>
+        <h3>Native<br>platform work</h3>
+        <p>Platform channels, native ad factories on both platforms, Flutter embedded in Kotlin and Swift hosts over Pigeon with a cached engine.</p>
+        <p class="power__tags">Kotlin · Swift · Pigeon · Add-to-app</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">03</p>
+        <h3>Offline &amp;<br>real-time</h3>
+        <p>Outbox queues with backoff and a written conflict rule. VoIP and WebRTC calling. BLE GATT with stream lifecycle and bounded reconnection.</p>
+        <p class="power__tags">SQLite · WebRTC · BLE · WebSockets</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">04</p>
+        <h3>Monetisation<br>&amp; compliance</h3>
+        <p>Ad platform built from zero — seven mediation networks, remote-configurable placements. Age verification across four jurisdictions, GDPR, ATT.</p>
+        <p class="power__tags">AdMob · CMP SDK · Akamai BMP · GDPR</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">05</p>
+        <h3>Testing that<br>finds things</h3>
+        <p>Unit, BDD widget, integration and Maestro. The tests worth writing are the ugly ones — truncated packets, killed processes, stale versions.</p>
+        <p class="power__tags">Mockito · Mocktail · Maestro · 80%+ coverage</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">06</p>
+        <h3>Shipping<br>machinery</h3>
+        <p>Bitrise, Fastlane and GitHub Actions. An 80% cut in deployment time is the difference between bi-weekly releases and releases when someone is free.</p>
+        <p class="power__tags">Bitrise · Fastlane · Sentry · Raygun</p>
+      </article>
+
+      <article class="power rise">
+        <p class="power__no">07</p>
+        <h3>Building<br>with AI</h3>
+        <p>Claude in the loop daily. Ask for the seam, not the feature; make it write the limitation down; and never let a green test suite stand in for looking.</p>
+        <p class="power__tags">Claude · agent loops · tool schemas</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NUMBERS ══════════════ -->
+<section class="numbers" id="numbers">
+  <div class="wrap">
+    <p class="kicker rise" style="color:#B9B1A2">— field report —</p>
+    <h2 class="section-title rise">The<br>numbers</h2>
+    <p class="section-sub rise">Everything below is production, not a side project.</p>
+    <div class="stats rise">
+      <div class="stat"><p class="stat__n">60M+</p><p class="stat__l">Registered members</p></div>
+      <div class="stat"><p class="stat__n">34+</p><p class="stat__l">App flavours, one codebase</p></div>
+      <div class="stat"><p class="stat__n">180+</p><p class="stat__l">Countries served</p></div>
+      <div class="stat"><p class="stat__n">43</p><p class="stat__l">Languages shipped</p></div>
+      <div class="stat"><p class="stat__n">1.4M+</p><p class="stat__l">Installs per month</p></div>
+      <div class="stat"><p class="stat__n">80%</p><p class="stat__l">Deploy time removed</p></div>
+      <div class="stat"><p class="stat__n">80%+</p><p class="stat__l">Test coverage</p></div>
+      <div class="stat"><p class="stat__n">5 yrs</p><p class="stat__l">Shipping Flutter</p></div>
+      <div class="stat"><p class="stat__n">7</p><p class="stat__l">Ad mediation networks</p></div>
+      <div class="stat"><p class="stat__n">4</p><p class="stat__l">Compliance jurisdictions</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ MISSIONS ══════════════ -->
+<section id="missions">
+  <div class="wrap">
+    <p class="kicker rise">— the missions —</p>
+    <h2 class="section-title rise">Selected<br>work</h2>
+    <p class="section-sub rise">Five that are worth opening. One of them you can run in this browser.</p>
+
+    <div class="missions__grid">
+      <a class="mission mission--wide rise" href="https://rushabhfulkari.github.io/cadence/">
+        <div class="mission__top">
+          <span class="tape-print mission__art"><img src="art/sessions.png" alt=""></span>
+          <div>
+            <p class="mission__id">M-01 · live in your browser</p>
+            <h3>Cadence</h3>
+          </div>
+        </div>
+        <p>
+          A Flutter reference app built to be read as much as run. Ten
+          production-grade features in one codebase, each with the trade-off it
+          makes written down beside the working code — offline-first sync, BLE
+          GATT, an LLM agent loop, server-driven UI, a WCAG AA audit, and one
+          screen embedded in native Kotlin and Swift hosts over Pigeon.
+        </p>
+        <div class="chips">
+          <span class="chip chip--red">Live demo</span>
+          <span class="chip chip--lime">300 tests</span>
+          <span class="chip">Zero analyzer issues</span>
+          <span class="chip">CI green</span>
+          <span class="chip chip--blue">Source on GitHub</span>
+        </div>
+        <p class="mission__tags">Flutter · Kotlin · Swift · Pigeon · SQLite · BLE</p>
+      </a>
+
+      <div class="mission rise">
+        <div class="mission__top">
+          <span class="tape-print mission__art"><img src="art/feed.png" alt=""></span>
+          <div><p class="mission__id">M-02 · 2025 → now</p><h3>CupidMedia</h3></div>
+        </div>
+        <p>
+          34 app flavours, one codebase, 60M members. Built the ad monetisation
+          platform from zero — banner, interstitial and native formats, native ad
+          factories on both platforms, seven mediation networks, all of it
+          remote-configurable so experiments ship without a release.
+        </p>
+        <div class="chips">
+          <a class="chip" href="https://www.afrointroductions.com/">AfroIntroductions</a>
+          <a class="chip" href="https://www.muslima.com/">Muslima</a>
+          <a class="chip" href="https://www.thaicupid.com/">ThaiCupid</a>
+          <a class="chip" href="https://www.filipinocupid.com/">FilipinoCupid</a>
+        </div>
+        <p class="mission__tags">AdMob · Akamai BMP · Age Signals · Sentry</p>
       </div>
-      <p class="row__note">
-        34 app flavours, one codebase. Built the ad monetisation platform from
-        zero — banner, interstitial and native formats, native ad factories on
-        both platforms, seven mediation networks, all of it remote-configurable
-        so experiments ship without a release. Age verification on Google Play
-        Age Signals and Apple's Declared Age Range behind a fail-open plugin for
-        Texas, Utah, Louisiana and Brazil. Akamai Bot Manager extended from
-        three endpoints to the whole account surface. Led the Sentry migration
-        and cut Android ANR risk.
-      </p>
-      <p class="links">
-        <a class="pill" href="https://www.afrointroductions.com/">AfroIntroductions</a>
-        <a class="pill" href="https://www.muslima.com/">Muslima</a>
-        <a class="pill" href="https://www.thaicupid.com/">ThaiCupid</a>
-        <a class="pill" href="https://www.filipinocupid.com/">FilipinoCupid</a>
-      </p>
+
+      <a class="mission rise" href="https://www.highlandsbrain.com/">
+        <div class="mission__top">
+          <span class="tape-print mission__art"><img src="art/voice.png" alt=""></span>
+          <div><p class="mission__id">M-03 · Unico Connect</p><h3>Highlands Brain</h3></div>
+        </div>
+        <p>
+          Audio-video calling on the Stream SDK. Call initiation, acceptance and
+          background handling, platform-specific call UI with custom ringtones,
+          and reconnection through network drops — with call state persisting
+          across the app lifecycle.
+        </p>
+        <p class="mission__tags">Stream SDK · WebRTC · BLoC · platform channels</p>
+      </a>
+
+      <a class="mission rise" href="https://www.sergo.com/">
+        <div class="mission__top">
+          <span class="tape-print mission__art"><img src="art/plans.png" alt=""></span>
+          <div><p class="mission__id">M-04 · Bottlecap</p><h3>Sergo</h3></div>
+        </div>
+        <p>
+          A form builder that renders text, checkbox, radio, dropdown, signature
+          and file-upload fields from API configuration alone — multi-step
+          validation with section progress, digital signatures and PDF
+          generation.
+        </p>
+        <p class="mission__tags">Server-driven forms · Cubit · PDF</p>
+      </a>
+
+      <div class="mission rise">
+        <div class="mission__top">
+          <span class="tape-print mission__art"><img src="art/vault.png" alt=""></span>
+          <div><p class="mission__id">M-05</p><h3>Apprintly</h3></div>
+        </div>
+        <p>
+          Real-time order tracking over FCM, an interactive product designer with
+          image manipulation and frame customisation, and an admin dashboard for
+          order and delivery management. Offline persistence on Hive.
+        </p>
+        <p class="mission__tags">BLoC · Hive · FCM · payments</p>
+      </div>
     </div>
   </div>
+</section>
 
-  <a class="row reveal" href="https://www.highlandsbrain.com/">
-    <span class="row__art"><span class="frame" style="--tilt:-1deg;width:64px"><img src="art/voice.png" alt=""></span></span>
-    <span class="row__body">
-      <span class="row__head">
-        <span class="row__name">Highlands Brain</span><span class="row__arrow">→</span>
-        <span class="row__meta">Unico Connect</span>
-      </span>
-      <span class="row__note">
-        Audio-video calling on the Stream SDK: call initiation, acceptance,
-        rejection and background handling, with platform-specific call UI,
-        custom ringtones and reconnection through network drops. Call state
-        persists and recovers across the app lifecycle.
-      </span>
-      <span class="row__tags">Stream SDK · WebRTC · BLoC · platform channels</span>
-      <span class="links">
-        <span class="pill">Android</span><span class="pill">iOS</span>
-      </span>
-    </span>
-  </a>
+<div class="marquee marquee--red marquee--rev">
+  <div class="marquee__track">
+    <span>Write the limitation down ✦</span>
+    <span>A green suite is not a rendered screen ✦</span>
+    <span>Ask for the seam, not the feature ✦</span>
+  </div>
+</div>
 
-  <a class="row reveal" href="https://www.sergo.com/">
-    <span class="row__art"><span class="frame" style="--tilt:1.5deg;width:64px"><img src="art/plans.png" alt=""></span></span>
-    <span class="row__body">
-      <span class="row__head">
-        <span class="row__name">Sergo</span><span class="row__arrow">→</span>
-        <span class="row__meta">Bottlecap</span>
-      </span>
-      <span class="row__note">
-        A form builder that renders text, checkbox, radio, dropdown, signature
-        and file-upload fields from API configuration alone — multi-step
-        validation with section progress, digital signatures, image
-        attachments and PDF generation.
-      </span>
-      <span class="row__tags">Server-driven forms · Cubit · PDF generation</span>
-      <span class="links">
-        <span class="pill">Android</span><span class="pill">iOS</span>
-      </span>
-    </span>
-  </a>
+<!-- ══════════════ DISPATCHES ══════════════ -->
+<section class="dispatches" id="dispatches">
+  <div class="wrap">
+    <p class="kicker rise">— dispatches —</p>
+    <h2 class="section-title rise">Things I<br>wrote down</h2>
+    <p class="section-sub rise">
+      Bugs with receipts, mostly. What building production Flutter with an AI in
+      the loop actually costs, and the specific things that broke.
+    </p>
+    <div data-posts></div>
+    <p style="margin-top:26px"><a class="btn btn--ghost" href="blog/">All dispatches →</a></p>
+  </div>
+</section>
 
-  <div class="row reveal">
-    <span class="row__art"><span class="frame" style="--tilt:-1.8deg;width:64px"><img src="art/log.png" alt=""></span></span>
-    <div class="row__body">
-      <div class="row__head"><span class="row__name" style="text-decoration:none">Apprintly</span></div>
-      <p class="row__note">
-        Real-time order tracking over FCM, an interactive product designer with
-        image manipulation and frame customisation, and an admin dashboard for
-        order and delivery management. Offline persistence on Hive with image
-        caching and background upload.
-      </p>
-      <p class="row__tags">BLoC · Hive · FCM · payments</p>
+<!-- ══════════════ CONTACT ══════════════ -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <p class="kicker rise">— last page —</p>
+    <h2 class="display display--tone contact__big rise">Let's<br>team up</h2>
+    <p class="section-sub rise" style="margin-top:26px">
+      Looking for a senior Flutter role in the UK or US. If you are building
+      something that has to work offline, talk to hardware, or live inside an app
+      that already exists — that is the part I like.
+    </p>
+    <div class="contact__links rise">
+      <a class="btn" href="mailto:rushabhfulkari@gmail.com">Email me</a>
+      <a class="btn btn--ghost" href="https://github.com/rushabhfulkari">GitHub ↗</a>
+      <a class="btn btn--ghost" href="https://www.linkedin.com/in/rushabh-fulkari-b5200b120/">LinkedIn ↗</a>
+      <a class="btn btn--blue" href="rushabh-fulkari-cv.pdf">CV / PDF ↗</a>
     </div>
   </div>
+</section>
 
-  <h2 class="reveal">Where I have worked</h2>
-  <div class="row reveal"><div class="row__body">
-    <div class="row__head"><span class="row__name" style="text-decoration:none">CupidMedia (Social Discovery Group)</span><span class="row__meta">May 2025 — now</span></div>
-    <p class="row__note">Mobile Application Developer. 34+ global dating apps, 30M+ users. Multi-flavour infrastructure with automated CI/CD; owning onboarding, security, monetisation, UI redesign, analytics and regulatory compliance.</p>
-  </div></div>
-  <div class="row reveal"><div class="row__body">
-    <div class="row__head"><span class="row__name" style="text-decoration:none">Unico Connect</span><span class="row__meta">Dec 2024 — May 2025</span></div>
-    <p class="row__note">Flutter Developer. The Brain audio-video call module — call management, background handling and quality monitoring, with state persistence on BLoC.</p>
-  </div></div>
-  <div class="row reveal"><div class="row__body">
-    <div class="row__head"><span class="row__name" style="text-decoration:none">Fastenal India</span><span class="row__meta">Jul 2023 — Dec 2024</span></div>
-    <p class="row__note">Flutter Developer. Interactive applications for manufacturing staff, on BLoC, with comprehensive form validation and submission workflows.</p>
-  </div></div>
-  <div class="row reveal"><div class="row__body">
-    <div class="row__head"><span class="row__name" style="text-decoration:none">Bottlecap Technologies</span><span class="row__meta">Oct 2021 — Apr 2023</span></div>
-    <p class="row__note">Flutter Developer. Social networking, dating and e-commerce apps, with real-time features and scalable state management.</p>
-  </div></div>
-  <div class="row reveal"><div class="row__body">
-    <div class="row__head"><span class="row__name" style="text-decoration:none">Freelance</span><span class="row__meta">Jan 2021 — Oct 2021</span></div>
-    <p class="row__note">Daily Crypto News, Outfik, Spot the Truck, PPTS India, Streetrulerz, Cryptax — cryptocurrency, fashion, logistics and automotive.</p>
-  </div></div>
-
-  <h2 class="reveal">Numbers</h2>
-  <dl class="metrics reveal">
-    <div><dt>Registered members</dt><dd>60M+</dd></div>
-    <div><dt>Monthly installs</dt><dd>1.4M+</dd></div>
-    <div><dt>Countries served</dt><dd>180+</dd></div>
-    <div><dt>Languages shipped</dt><dd>43</dd></div>
-    <div><dt>App flavours</dt><dd>34+</dd></div>
-    <div><dt>Deploy time cut</dt><dd>80%</dd></div>
-    <div><dt>Release cadence</dt><dd>Bi-weekly</dd></div>
-    <div><dt>Test coverage</dt><dd>80%+</dd></div>
-  </dl>
-
-  <h2 class="reveal">Stack</h2>
-  <p class="stack reveal">
-    <b>Core</b>Flutter · Dart · Clean Architecture · native platform channels
-    <b>State</b>BLoC · Cubit · Riverpod · Provider · GetIt · built_value
-    <b>Platform</b>Firebase · AdMob · AppsFlyer · Akamai BMP · CMP SDK · GDPR · ATT · i18n
-    <b>Realtime</b>VoIP · WebRTC · Stream Video · Agora · WebSockets
-    <b>Testing</b>Unit · BDD widget · integration · Mockito · Mocktail · Maestro
-    <b>Delivery</b>Bitrise · Fastlane · GitHub Actions · Sentry · Raygun
-    <b>Also</b>Android · Xcode · Kotlin · Swift · Python · Java · C# · JavaScript
-  </p>
-
-  <h2 class="reveal">Elsewhere</h2>
-  <p class="stack reveal" style="color:var(--ink-muted)">
-    <a href="https://github.com/rushabhfulkari">GitHub</a> ·
-    <a href="https://www.linkedin.com/in/rushabh-fulkari-b5200b120/">LinkedIn</a> ·
-    <a href="mailto:rushabhfulkari@gmail.com">Email</a> ·
-    <a href="rushabh-fulkari-cv.pdf">CV</a>
-    <b>Away from a keyboard</b>
-    <a href="https://www.youtube.com/watch?v=VSawO5BKfj8">Guitar</a> ·
-    <a href="https://www.youtube.com/watch?v=LVSTF05RsGk">Rapping</a> ·
-    Cricket · B.Tech, NIT Karnataka (7.97 CGPA) ·
-    A year in the USA on the KLYES exchange, and the BUBW peace conference in Maryland.
-  </p>
-
-  <div class="prints reveal">
-    <span class="frame frame--taped" style="--tilt:-1.3deg"><img src="art/strap.png" alt=""></span>
-    <span class="frame" style="--tilt:2deg;width:88px"><img src="art/feed.png" alt=""></span>
-    <span class="frame frame--taped" style="--tilt:-.8deg;width:80px"><img src="art/vault.png" alt=""></span>
+<footer>
+  <div class="wrap">
+    <p style="margin:0 0 6px">
+      <b style="color:var(--paper)">Rushabh Fulkari</b> · Senior Flutter Developer ·
+      B.Tech, NIT Karnataka · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a>
+    </p>
+    <p style="margin:0">
+      © <span data-year>2026</span> · Hand-written — no framework, no build step for the page you are on.
+      Illustrations are <a href="https://www.openpeeps.com/">Open Peeps</a> by Pablo Stanley, CC0.
+    </p>
   </div>
+</footer>
 
-  <p class="colophon reveal">
-    Built by hand — no framework, no build step. The type, the palette, the
-    prints and the faces all come from Cadence, because a portfolio that looks
-    nothing like the work it is showing is arguing against itself.
-    Illustrations are Open Peeps by Pablo Stanley, CC0.
-  </p>
+<div class="assistant">
+  <div class="assistant__bubble">Hello. I am the field assistant. Tap me for a war story.</div>
+  <button class="assistant__btn" type="button" aria-label="Next war story">
+    <img src="art/tomas.png" alt="">
+  </button>
+</div>
 
-</main>
-
-<script>
-  var root = document.documentElement;
-  var button = document.getElementById('theme');
-
-  function paint() {
-    var dark = root.dataset.theme !== 'light';
-    document.getElementById('icon-moon').hidden = !dark;
-    document.getElementById('icon-sun').hidden = dark;
-    button.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-    var meta = document.querySelector('meta[name=theme-color]');
-    if (meta) meta.content = dark ? '#000000' : '#F2F1EA';
-  }
-  paint();
-
-  button.addEventListener('click', function () {
-    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
-    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
-    paint();
-  });
-
-  // Entrance, once per element. Unobserving on the way in is what stops a
-  // scroll back up from replaying the whole page.
-  var items = [].slice.call(document.querySelectorAll('.reveal'));
-  if (!window.IntersectionObserver || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    items.forEach(function (el) { el.classList.add('is-in'); });
-  } else {
-    var seen = 0;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        // Stagger only the first screenful. Past that the reader is scrolling,
-        // and a delay just means content arriving after they have looked.
-        entry.target.style.setProperty('--delay', (seen < 6 ? seen * 55 : 0) + 'ms');
-        seen++;
-        entry.target.classList.add('is-in');
-        io.unobserve(entry.target);
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    items.forEach(function (el) { io.observe(el); });
-  }
-</script>
+<script src="assets/comic.js"></script>
+<script src="assets/posts.js"></script>
 </body>
 </html>

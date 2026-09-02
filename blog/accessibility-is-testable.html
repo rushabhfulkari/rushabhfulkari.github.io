@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accessibility is a testable property, not a checklist — Rushabh Fulkari</title>
+<meta name="description" content="Is it accessible?&quot; has no answer. &quot;Does this text clear 4.5:1 against the surface it is on?&quot; has exactly one, and you can assert it.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="Accessibility is a testable property, not a checklist">
+<meta property="og:description" content="Is it accessible?&quot; has no answer. &quot;Does this text clear 4.5:1 against the surface it is on?&quot; has exactly one, and you can assert it.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/accessibility-is-testable.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-06</span>
+    <span>2026-08-06</span><span>·</span><span>Flutter, accessibility, WCAG, testing</span>
+  </p>
+  <h1>Accessibility is a testable property, not a checklist</h1>
+  <div class="article__body">
+<p>Most accessibility work I have seen goes: someone adds <code>Semantics</code> widgets until
+the warnings stop, ships, and never thinks about it again. The reason is not
+laziness. It is that "make it accessible" is not a task with a definition of
+done.</p>
+<p>So I stopped treating it as a checklist and started treating it as a set of
+properties a test can check. Four that earned their place.</p>
+<h2>1. Contrast is arithmetic, so compute it</h2>
+<p>WCAG contrast is not a vibe. It is a ratio of relative luminances, and relative
+luminance is a defined function — linearise each channel, weight them
+<code>0.2126 / 0.7152 / 0.0722</code>, and divide.</p>
+<p>I wrote it once, ran my own palette through it, and found <strong>six failures in a
+palette I had designed by eye and was rather pleased with:</strong></p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th>was</th>
+<th>now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inkFaint</code></td>
+<td>3.69:1</td>
+<td>4.73:1</td>
+</tr>
+<tr>
+<td>white on <code>primary</code></td>
+<td>4.23:1</td>
+<td>4.68:1</td>
+</tr>
+<tr>
+<td><code>accent</code></td>
+<td>3.35:1</td>
+<td>4.70:1</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>4.26:1</td>
+<td>4.67:1</td>
+</tr>
+</tbody>
+</table>
+<p>It also surfaced a design bug rather than a colour bug: one token was serving as
+both a decorative border and a control boundary. Those have different thresholds
+— 3:1 for a control, and decoration has none — so they needed to be two tokens.
+I would not have found that by squinting.</p>
+<p>Every colour I ship is now solved rather than picked. When I built a set of
+per-destination accents, I wrote a script that walks lightness until each one
+clears 4.5:1 against <em>its own surface in its own theme</em> — which is also why
+light and dark are separate values rather than one colour lightened at runtime.
+A single mid-tone that passes on white cannot also pass on near-black. One of
+them is failing.</p>
+<h2>2. A tooltip is not a name</h2>
+<p>This one is a genuine Flutter trap.</p>
+<pre><code class="language-dart">IconButton(
+  tooltip: 'Back to the list',   // ← not the accessible name
+  icon: Icon(Icons.arrow_back),
+)
+</code></pre>
+<p><code>tooltip</code> populates the semantics <strong>tooltip</strong>, not the label. TalkBack announces
+"button". The fix is a <code>semanticLabel</code> on the icon, or a <code>Semantics</code> wrapper —
+and the way to stop it regressing is to find the control in tests by
+<code>find.bySemanticsLabel(...)</code> rather than <code>find.byTooltip(...)</code>. If the test can
+only find it the wrong way, so can only the sighted user.</p>
+<h2>3. A field with a separate error announces neither</h2>
+<p>A label <code>Text</code>, a <code>TextField</code>, and an error <code>Text</code> are three sibling nodes. A
+screen reader user focusing the field hears the field — not the label, not the
+error, and gets no hint that anything went wrong.</p>
+<p><code>MergeSemantics</code>, one composed label, <code>ExcludeSemantics</code> on the visible pieces
+so nothing is read twice, and <code>liveRegion: true</code> on the error so it is
+<em>announced</em> when it appears rather than merely drawn. A sighted user sees red.
+Without a live region nobody else learns anything changed.</p>
+<h2>4. The bug I wrote in the app that has an accessibility demo in it</h2>
+<p>Best lesson of the project, and it is embarrassing.</p>
+<p>I added entrance animations everywhere — content fades and lifts in as it
+arrives. Standard, tasteful, tested.</p>
+<p><code>Opacity</code> at exactly <code>0</code> <strong>removes its subtree from the semantics tree.</strong></p>
+<p>So for the duration of every fade, the content did not exist for a screen reader
+at all. On a staggered list it was worse than that — items appeared to them one
+at a time, in sequence, because that is what the stagger was doing to the
+opacity values. Shipped in an app whose sixth feature is a WCAG audit.</p>
+<pre><code class="language-dart">Opacity(
+  opacity: value,
+  alwaysIncludeSemantics: true,   // the fade is decoration
+  child: child,
+)
+</code></pre>
+<p>A test now asserts that a <code>DbInViewFade</code> at opacity <code>0</code> is still findable by its
+semantics label. It caught the regression the same afternoon I wrote it — which
+is the entire argument for this post. <strong>The animation is decoration. It has no
+business gating what gets announced.</strong></p>
+<h2>The bit that made it stick</h2>
+<p>I put a <strong>live audit in the app</strong>, rendering the actual computed ratios for the
+actual palette, so a failure is visible rather than filed. And reduce-motion
+lands every animation on its <em>end state</em> rather than on nothing — the content
+still has to be there, it just does not travel.</p>
+<p>Accessibility stopped being a thing I remembered to do and became a thing that
+breaks the build. That is the only version of it I have seen survive contact
+with a deadline.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>

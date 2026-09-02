@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>34 app flavours, 60 million users — what actually breaks at scale — Rushabh Fulkari</title>
+<meta name="description" content="At one app, a hardcoded value is a shortcut. At thirty-four, it is thirty-four releases. Everything I learned rebuilding ad monetisation across a portfolio.">
+<meta name="theme-color" content="#F1EADA">
+<meta property="og:title" content="34 app flavours, 60 million users — what actually breaks at scale">
+<meta property="og:description" content="At one app, a hardcoded value is a shortcut. At thirty-four, it is thirty-four releases. Everything I learned rebuilding ad monetisation across a portfolio.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rushabhfulkari.github.io/art/app_icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rushabhfulkari.github.io/blog/thirty-four-flavours.html">
+<link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/comic.css">
+</head>
+<body>
+<article class="article">
+  <a class="backlink" href="./">← All dispatches</a>
+  <p class="article__meta" style="margin-top:22px">
+    <span class="stamp stamp--red">M-05</span>
+    <span>2026-08-10</span><span>·</span><span>Flutter, scale, CI/CD, monetisation, compliance</span>
+  </p>
+  <h1>34 app flavours, 60 million users — what actually breaks at scale</h1>
+  <div class="article__body">
+<p>I work on a portfolio of dating apps — 34 flavours from one Flutter codebase,
+60M+ registered members, 180 countries, 43 languages. Most of what I have
+learned there is not about Flutter. It is about what stops being true when you
+multiply by thirty-four.</p>
+<h2>A hardcoded value is thirty-four releases</h2>
+<p>The single most useful thing I built was not a feature. It was making ad
+placements, refresh rates and ad-unit IDs <strong>remote-configurable</strong>.</p>
+<p>At one app, hardcoding an ad unit is a shortcut you regret mildly. At
+thirty-four it is a store review, a staged rollout and a week of waiting —
+multiplied by every experiment anyone wants to run. Once the values move to
+config, an experiment is a toggle and the release train stops being the
+bottleneck for the growth team.</p>
+<p>The general rule I now apply early: <strong>anything a non-engineer will want to
+change more than twice does not belong in a build.</strong></p>
+<h2>Empty ad slots are a systems problem</h2>
+<p>The naive integration requests an ad when a screen appears. That gives you empty
+slots on slow networks, wasted requests on screens the user leaves immediately,
+and a fill rate that looks like a mediation problem and is not.</p>
+<p>What fixed it was unglamorous:</p>
+<ul>
+<li><strong>session-aware prefetch</strong> — request ahead of where the user is going, not
+  where they are</li>
+<li><strong>request throttling with retry tracking</strong> — a failed request that retries
+  immediately, forever, is a spend problem and a battery problem</li>
+<li><strong>fallback handling</strong> across seven mediation networks, so a network that is
+  slow today degrades to the next one instead of leaving a hole</li>
+</ul>
+<p>None of that is Flutter. All of it is the difference between an integration that
+technically works and one that earns.</p>
+<h2>Compliance is a feature with a deadline you do not control</h2>
+<p>Age verification across Texas, Utah, Louisiana and Brazil, on Google Play Age
+Signals and Apple's Declared Age Range API. Two platform APIs with different
+shapes, different availability, and different failure modes, behind one Flutter
+plugin.</p>
+<p>The design decision that mattered: <strong>fail open</strong>. If the signal is unavailable —
+old OS, API not rolled out, network down — the user is not locked out of the
+app. A compliance control that bricks the product for people it was never
+about is a worse outcome than the thing it was guarding against, and legal
+agreed faster than I expected.</p>
+<h2>Crash noise is a classification problem</h2>
+<p>We migrated to Sentry for error tracking and performance monitoring. The
+immediate win was not the tool — it was being forced to <strong>classify</strong> errors on
+the way in.</p>
+<p>Sign-in crash reports dropped 40% not because sign-in got 40% more reliable, but
+because "user cancelled the Google sign-in sheet" stopped being reported as a
+crash. It never was one. It was noise sitting on top of the real failures and
+making them impossible to see.</p>
+<p>Then the profiling and tracing overhead itself showed up in Play vitals as ANR
+risk, and stripping it cut that too. Observability is not free, and on a
+mid-range Android device in a country with 43 supported languages, "not free" is
+measurable.</p>
+<h2>What the flavour count really teaches</h2>
+<p>Every shortcut is multiplied. Every manual step is multiplied. The 80% cut in
+deployment time from Bitrise automation is not a productivity stat — it is the
+difference between shipping bi-weekly and shipping when someone has a free
+afternoon.</p>
+<p>And the thing I did not expect: <strong>the codebase gets better because it has to.</strong>
+You cannot special-case one flavour thirty-four times. The pressure to find the
+one abstraction that covers all of them is constant, and it produces cleaner
+code than any style guide I have worked under.</p>
+  </div>
+  <p style="margin-top:56px"><a class="btn btn--ghost" href="./">← All dispatches</a>
+     <a class="btn" href="../">Back to the top</a></p>
+</article>
+<footer>
+  <div class="wrap">
+    <p style="margin:0"><b style="color:var(--paper)">Rushabh Fulkari</b> ·
+    Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
+  </div>
+</footer>
+</body>
+</html>
