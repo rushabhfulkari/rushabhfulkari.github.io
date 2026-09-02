@@ -22,6 +22,28 @@
 
 <!-- ══════════════ HERO ══════════════ -->
 <header class="hero">
+  <span class="web web--tl" aria-hidden="true"></span>
+  <span class="web web--br" aria-hidden="true"></span>
+<div class="spider" aria-hidden="true">
+  <span class="spider__thread"></span>
+  <svg class="spider__body" width="86" height="66" viewBox="0 0 86 66" fill="none">
+    <g stroke="#14110D" stroke-width="3.2" stroke-linecap="round" fill="none">
+      <path d="M34 26C24 18 16 12 4 16"/>
+      <path d="M34 32C22 30 13 30 3 37"/>
+      <path d="M34 38C23 42 16 47 9 56"/>
+      <path d="M35 43C28 49 25 55 24 63"/>
+      <path d="M52 26C62 18 70 12 82 16"/>
+      <path d="M52 32C64 30 73 30 83 37"/>
+      <path d="M52 38C63 42 70 47 77 56"/>
+      <path d="M51 43C58 49 61 55 62 63"/>
+    </g>
+    <ellipse cx="43" cy="25" rx="10" ry="8" fill="#14110D"/>
+    <ellipse cx="43" cy="41" rx="14" ry="16" fill="#14110D"/>
+    <path d="M43 33l5 8-5 9-5-9z" fill="#D42A3C"/>
+    <circle cx="39" cy="23" r="2" fill="#F1EADA"/>
+    <circle cx="47" cy="23" r="2" fill="#F1EADA"/>
+  </svg>
+</div>
   <div class="wrap" style="width:100%">
     <div class="hero__issue rise">
       <span class="stamp stamp--red">Issue #001</span>
@@ -31,22 +53,44 @@
     </div>
 
     <h1 class="display display--tone hero__name" data-parallax>
-      <span>Rushabh</span><span>Fulkari</span>
+      <span data-text="Rushabh">Rushabh</span><span data-text="Fulkari">Fulkari</span>
     </h1>
 
-    <p class="hero__tag rise">
-      Senior Flutter developer. I ship <b>34 app flavours from one codebase</b>
-      to 60&nbsp;million people in 180 countries — and I write down what broke on
-      the way.
-    </p>
+    <div class="hero__grid">
+      <div>
+        <p class="hero__tag rise">
+          Senior Flutter developer. I ship <b>34 app flavours from one
+          codebase</b> to 60&nbsp;million people in 180 countries — and I write
+          down what broke on the way.
+        </p>
 
-    <div class="hero__cta rise">
-      <a class="btn" href="#missions">Read the missions</a>
-      <a class="btn btn--ghost" href="#dispatches">Dispatches</a>
-      <a class="btn btn--ghost" href="rushabh-fulkari-cv.pdf">CV / PDF</a>
+        <div class="hero__cta rise">
+          <a class="btn" href="#missions">Read the missions</a>
+          <a class="btn btn--ghost" href="#dispatches">Dispatches</a>
+          <a class="btn btn--ghost" href="rushabh-fulkari-cv.pdf">CV / PDF</a>
+        </div>
+
+        <p class="hero__scroll rise">Scroll <span>↓</span></p>
+      </div>
+
+      <aside class="hero__aside">
+        <div class="hero__card rise">
+          <h4>Currently</h4>
+          <p>CupidMedia — 34 flavours, one Flutter codebase, 60M members across
+             180 countries.</p>
+        </div>
+        <div class="hero__card rise" style="transform:rotate(-1.1deg)">
+          <h4>Open to</h4>
+          <p>Senior Flutter roles in the UK or US. Offline, hardware, or living
+             inside an app that already exists — that is the part I like.</p>
+        </div>
+        <div class="hero__card rise" style="transform:rotate(.5deg)">
+          <h4>Latest</h4>
+          <p><a href="https://rushabhfulkari.github.io/cadence/">Cadence</a> —
+             ten production-grade Flutter features, running in your browser.</p>
+        </div>
+      </aside>
     </div>
-
-    <p class="hero__scroll rise">Scroll <span>↓</span></p>
   </div>
 </header>
 
@@ -60,6 +104,8 @@
 
 <!-- ══════════════ ORIGIN ══════════════ -->
 <section class="origin" id="origin">
+  <span class="web web--tr" aria-hidden="true"></span>
+  <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
   <div class="wrap">
     <p class="kicker rise">Page 1 — origin story</p>
     <h2 class="section-title rise">An ordinary<br>codebase…</h2>
@@ -103,6 +149,7 @@
 
 <!-- ══════════════ POWERS ══════════════ -->
 <section id="powers">
+  <span class="web web--bl" aria-hidden="true"></span>
   <div class="wrap">
     <p class="kicker rise">— what I actually do —</p>
     <h2 class="section-title rise">My<br>powers</h2>
@@ -163,6 +210,7 @@
 
 <!-- ══════════════ NUMBERS ══════════════ -->
 <section class="numbers" id="numbers">
+  <span class="fx fx--lime" style="top:12%;right:7%" aria-hidden="true">BANG!</span>
   <div class="wrap">
     <p class="kicker rise" style="color:#B9B1A2">— field report —</p>
     <h2 class="section-title rise">The<br>numbers</h2>
@@ -184,6 +232,8 @@
 
 <!-- ══════════════ MISSIONS ══════════════ -->
 <section id="missions">
+  <span class="web web--tr" aria-hidden="true"></span>
+  <span class="fx fx--blue" style="top:9%;right:5%" aria-hidden="true">POW!</span>
   <div class="wrap">
     <p class="kicker rise">— the missions —</p>
     <h2 class="section-title rise">Selected<br>work</h2>
@@ -303,9 +353,11 @@
 
 <!-- ══════════════ CONTACT ══════════════ -->
 <section class="contact" id="contact">
+  <span class="web web--tl" aria-hidden="true"></span>
+  <span class="web web--br" aria-hidden="true"></span>
   <div class="wrap">
     <p class="kicker rise">— last page —</p>
-    <h2 class="display display--tone contact__big rise">Let's<br>team up</h2>
+    <h2 class="display display--tone contact__big rise"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
     <p class="section-sub rise" style="margin-top:26px">
       Looking for a senior Flutter role in the UK or US. If you are building
       something that has to work offline, talk to hardware, or live inside an app

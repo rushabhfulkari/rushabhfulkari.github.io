@@ -24,8 +24,11 @@
   --comic:   'Bangers', 'Comic Sans MS', cursive;
   --body:    'IBM Plex Mono', ui-monospace, Menlo, monospace;
 
-  --gutter: clamp(18px, 5vw, 64px);
-  --measure: 680px;
+  /* Wide on purpose. The old 1120px wrap left a third of a large screen
+     empty on both sides and the whole thing read as a column floating in
+     the middle of a page. Content now runs to the edges. */
+  --gutter: clamp(18px, 4.5vw, 92px);
+  --measure: 760px;
 }
 
 * { box-sizing: border-box; }
@@ -80,9 +83,30 @@ a { color: inherit; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-stroke: 2px var(--ink);
-  paint-order: stroke fill;
-  filter: drop-shadow(4px 4px 0 rgba(20, 17, 13, .28));
+  /* No stroke on this element. `-webkit-text-stroke` combined with
+     `background-clip: text` makes the engine paint the element's box edge as
+     a stray rectangle beside the last glyph — reproducible, and it survives
+     removing the filter and paint-order. The outline is a layer behind
+     instead: see .display--tone > span::before. */
+}
+
+/* No outline layer, and no -webkit-text-stroke anywhere near this element.
+   Both attempts produced a stray black bar beside the last glyph: the stroke
+   directly, because it interacts badly with background-clip:text, and the
+   duplicate-text pseudo-element because the fat stroke pushed it past its
+   containing block and it wrapped a fragment. Depth comes from a drop-shadow
+   on the fill instead, which is one property and cannot wrap. */
+.display--tone > span {
+  position: relative; display: block;
+  /* The fill has to live on the span, not the h1. Positioning the span makes
+     it paint above its ancestor's background, so an h1-level
+     background-clip:text fill ends up hidden behind its own children. */
+  background-image: inherit;
+  background-size: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(5px 6px 0 rgba(20, 17, 13, .42));
 }
 
 .kicker {
@@ -110,16 +134,17 @@ a { color: inherit; }
 .panel--tilt-r { transform: rotate(1deg); }
 
 section { padding: clamp(72px, 12vh, 150px) var(--gutter); }
-.wrap { max-width: 1120px; margin: 0 auto; }
+.wrap { max-width: 1680px; margin: 0 auto; }
+.bleed { max-width: none; margin: 0; }
 .measure { max-width: var(--measure); }
 
 h2.section-title {
   font-family: var(--display);
-  font-size: clamp(34px, 7vw, 78px);
+  font-size: clamp(40px, 9vw, 132px);
   line-height: .88; text-transform: uppercase; margin: 0 0 8px;
   letter-spacing: -.02em;
 }
-.section-sub { color: var(--ink-soft); margin: 0 0 40px; max-width: 52ch; }
+.section-sub { color: var(--ink-soft); margin: 0 0 46px; max-width: 56ch; font-size: 16px; }
 
 /* ---------- marquee ---------- */
 .marquee {
@@ -397,3 +422,109 @@ footer a { color: var(--paper); }
 .article__body a { color: var(--red); }
 .backlink { font-family: var(--display); text-transform: uppercase; font-size: 12px; letter-spacing: .08em; text-decoration: none; }
 .backlink:hover { color: var(--red); }
+
+/* ============================================================
+   THE SPIDER — the signature element. A drawn arachnid on a
+   thread, dropping from the top of the page and swaying.
+   ============================================================ */
+.spider {
+  position: absolute; top: 0; right: clamp(40px, 12vw, 220px);
+  z-index: 5; pointer-events: none;
+  transform-origin: top center;
+  animation: sway 6.5s ease-in-out infinite;
+}
+.spider__thread {
+  display: block; width: 2px; margin: 0 auto;
+  height: clamp(120px, 26vh, 300px);
+  background: linear-gradient(180deg, transparent, var(--ink) 12%, var(--ink));
+}
+.spider__body { display: block; margin-top: -2px; }
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.6deg); }
+  50%      { transform: rotate(2.6deg); }
+}
+@media (prefers-reduced-motion: reduce) { .spider { animation: none; } }
+@media (max-width: 700px) { .spider { right: 18px; transform: scale(.72); } }
+
+/* Webbing in the corners. Pure CSS: repeating conic rays crossed with
+   concentric rings, masked to a quarter circle. */
+.web {
+  position: absolute; width: clamp(160px, 22vw, 340px); aspect-ratio: 1;
+  pointer-events: none; opacity: .3; z-index: 2;
+  background:
+    repeating-conic-gradient(from 0deg,
+      var(--ink) 0deg .35deg, transparent .35deg 11.25deg),
+    repeating-radial-gradient(circle at 0 0,
+      transparent 0 26px, var(--ink) 26px 27px);
+  -webkit-mask-image: radial-gradient(circle at 0 0, #000 0 70%, transparent 82%);
+          mask-image: radial-gradient(circle at 0 0, #000 0 70%, transparent 82%);
+}
+.web--tl { top: -1px; left: -1px; }
+.web--tr { top: -1px; right: -1px; transform: scaleX(-1); }
+.web--bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+.web--br { bottom: -1px; right: -1px; transform: scale(-1); }
+
+/* ============================================================
+   SOUND EFFECTS — comic onomatopoeia on a burst
+   ============================================================ */
+.fx {
+  position: absolute; z-index: 4; pointer-events: none;
+  font-family: var(--comic); font-size: clamp(26px, 4.4vw, 62px);
+  color: var(--paper); letter-spacing: .02em; line-height: 1;
+  padding: 18px 26px; text-align: center;
+  background: var(--red);
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+  border: 3px solid var(--ink);
+  clip-path: polygon(
+    50% 0%, 62% 14%, 79% 6%, 82% 25%, 100% 27%, 90% 43%, 100% 58%,
+    82% 63%, 84% 82%, 66% 76%, 55% 94%, 45% 76%, 28% 84%, 26% 64%,
+    6% 60%, 17% 44%, 4% 28%, 22% 24%, 20% 5%, 38% 13%);
+  animation: fxpop .5s cubic-bezier(.34,1.8,.64,1) both;
+}
+.fx--blue { background: var(--blue); }
+.fx--lime { background: var(--lime); color: var(--ink); }
+@keyframes fxpop { from { opacity: 0; transform: scale(.5) rotate(-14deg); } }
+@media (prefers-reduced-motion: reduce) { .fx { animation: none; } }
+@media (max-width: 760px) { .fx { display: none; } }
+
+/* ============================================================
+   FULL-BLEED LAYOUT
+   ============================================================ */
+.hero { padding-inline: var(--gutter); }
+.hero__name { font-size: clamp(56px, 17.5vw, 300px); }
+.hero__grid {
+  display: grid; gap: clamp(20px, 4vw, 70px); align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .hero__grid { grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); }
+}
+.hero__aside { display: flex; flex-direction: column; gap: 18px; }
+.hero__card {
+  background: var(--paper); border: var(--panel-border);
+  box-shadow: var(--shadow-hard); padding: 20px; transform: rotate(.8deg);
+}
+.hero__card h4 {
+  font-family: var(--display); text-transform: uppercase; font-size: 13px;
+  margin: 0 0 8px; letter-spacing: .06em;
+}
+.hero__card p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+
+/* Sections carry their own webbing, so they need a positioning context. */
+section, .hero { position: relative; overflow: hidden; }
+
+/* Wider grids now that the page is wider. */
+.origin__grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.missions__grid { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.stats { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.power { flex: 0 0 clamp(250px, 30vw, 340px); }
+
+/* Dispatches: give the title room to breathe at full width. */
+.dispatch { grid-template-columns: 74px 1fr auto; gap: 26px; padding: 26px 0; }
+.dispatch h3 { font-size: clamp(20px, 2.4vw, 30px); }
+.dispatch p { font-size: 14.5px; max-width: 88ch; }
+
+@media (max-width: 620px) {
+  .dispatch { grid-template-columns: 48px 1fr; gap: 16px; }
+}
