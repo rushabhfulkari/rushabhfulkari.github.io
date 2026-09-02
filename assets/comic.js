@@ -28,6 +28,10 @@
         fx: el.getAttribute('data-fx').split(' '),
         from: num(el, 'data-from', 0),
         to: num(el, 'data-to', 1),
+        // `rise` keeps its own distance. It is almost always combined with
+        // slide or scale, and those want `data-to` for something else — one
+        // shared number would make a 70px sideways slide into a 70px drop.
+        riseY: num(el, 'data-rise', 40),
         start: num(el, 'data-start', 1),      // enters when its top hits 100% vh
         end: num(el, 'data-end', 0.2),        // done when its top hits 20% vh
         done: false
@@ -71,7 +75,7 @@
       switch (it.fx[i]) {
         case 'rise':
           el.style.opacity = String(p);
-          t.push('translate3d(0,' + ((1 - e) * (it.to || 40)) + 'px,0)');
+          t.push('translate3d(0,' + ((1 - e) * it.riseY) + 'px,0)');
           break;
         case 'slide':
           t.push('translate3d(' + ((1 - e) * it.to) + 'px,0,0)');
@@ -139,15 +143,50 @@
     }, 2500);
   }
 
-  /* --- the spider descends as you scroll ----------------------------- */
+  /* --- the spider follows the pointer -------------------------------- */
+  /* Eased rather than pinned to the cursor: a spider that tracks exactly is a
+     cursor decoration, and one that lags and overshoots is an animal on a
+     thread. The tilt comes from horizontal velocity, so it swings into the
+     direction of travel and settles. */
   var spider = document.querySelector('.spider');
   if (spider && !reduced) {
     var thread = spider.querySelector('.spider__thread');
-    var base = parseFloat(getComputedStyle(thread).height) || 200;
-    window.addEventListener('scroll', function () {
-      var y = Math.min(window.scrollY, 900);
-      thread.style.height = (base + y * 0.42) + 'px';
+    var restLen = 150;
+    var targetX = window.innerWidth * 0.72, targetLen = restLen;
+    var x = targetX, len = restLen, lastX = x, tilt = 0;
+    var idle = true;
+
+    window.addEventListener('pointermove', function (e) {
+      idle = false;
+      targetX = e.clientX;
+      // Drop toward the pointer, but never past a comfortable reach, and
+      // never above the thread's resting length.
+      targetLen = Math.max(restLen, Math.min(e.clientY - 26, window.innerHeight * 0.75));
     }, { passive: true });
+
+    (function loop(t) {
+      if (idle) {
+        // Nothing has moved yet — drift gently so it reads as alive.
+        targetX = window.innerWidth * 0.72 +
+                  Math.sin(t / 1400) * Math.min(70, window.innerWidth * 0.05);
+      }
+      x   += (targetX - x) * 0.055;      // slow follow: the lag is the charm
+      len += (targetLen - len) * 0.075;
+
+      var vx = x - lastX;
+      lastX = x;
+      // Swing into the direction of travel, capped so it never spins.
+      tilt += ((-vx * 1.6) - tilt) * 0.1;
+      tilt = Math.max(-26, Math.min(26, tilt));
+
+      thread.style.height = len.toFixed(1) + 'px';
+      spider.style.transformOrigin = 'top center';
+      spider.style.transform =
+        'translate3d(' + (x - 43) + 'px,0,0) rotate(' + tilt.toFixed(2) + 'deg)';
+      requestAnimationFrame(loop);
+    })(0);
+  } else if (spider) {
+    spider.style.transform = 'translate3d(' + (window.innerWidth * 0.72 - 43) + 'px,0,0)';
   }
 
   /* --- marquees ------------------------------------------------------ */
@@ -192,6 +231,51 @@
       void bubble.offsetWidth;
       bubble.style.animation = '';
     });
+  }
+
+  /* --- loader --------------------------------------------------------- */
+  var loader = document.querySelector('.loader');
+  if (loader) {
+    var fill = loader.querySelector('.loader__fill');
+    var pct = loader.querySelector('.loader__pct');
+    var shown = 0;
+    var started = Date.now();
+
+    // Real progress where the browser gives it to us — images decoded — and a
+    // floor so the bar always moves. A loader that sits at 0% then jumps to
+    // 100% reads as broken rather than fast.
+    var imgs = [].slice.call(document.images);
+    var loaded = 0;
+    imgs.forEach(function (im) {
+      if (im.complete) { loaded++; return; }
+      im.addEventListener('load', function () { loaded++; }, { once: true });
+      im.addEventListener('error', function () { loaded++; }, { once: true });
+    });
+
+    (function tick() {
+      var byImage = imgs.length ? loaded / imgs.length : 1;
+      var byTime = Math.min(1, (Date.now() - started) / 1100);
+      var target = Math.round(Math.min(byImage, byTime) * 100);
+      shown += (target - shown) * 0.25;
+      var v = Math.round(shown);
+      if (fill) fill.style.width = v + '%';
+      if (pct) pct.textContent = v + '%';
+      if (v >= 99) return finish();
+      requestAnimationFrame(tick);
+    })();
+
+    function finish() {
+      if (fill) fill.style.width = '100%';
+      if (pct) pct.textContent = '100%';
+      setTimeout(function () {
+        loader.classList.add('is-done');
+        // Taken out of the tree once the panels have parted, so it can never
+        // sit invisibly over the page swallowing anything.
+        setTimeout(function () { loader.remove(); }, 950);
+      }, reduced ? 0 : 240);
+    }
+    // Belt and braces on top of the CSS bail-out.
+    setTimeout(finish, 4000);
   }
 
   var y = document.querySelector('[data-year]');

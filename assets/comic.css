@@ -592,3 +592,85 @@ section, .hero { position: relative; overflow: hidden; }
 
 /* Numbers big enough to read as a splash panel. */
 .stat__n { font-size: clamp(34px, 5.2vw, 62px); }
+
+/* ============================================================
+   LOADER — two comic panels that part to reveal the page
+   ============================================================ */
+.loader {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  pointer-events: none;
+  /* Auto-dismiss with no JavaScript at all. If the script never runs, the
+     loader must not become a permanent lid on the page — so the animation
+     itself removes it after four seconds. JS beats this to it normally. */
+  animation: loaderBail 0s 4s forwards;
+}
+@keyframes loaderBail { to { opacity: 0; visibility: hidden; } }
+
+.loader__half {
+  position: absolute; left: 0; width: 100%; height: 50.2%;
+  background: var(--paper); border-block: 5px solid var(--ink);
+  transition: transform .85s cubic-bezier(.76, 0, .24, 1);
+}
+.loader__half--top { top: 0; }
+.loader__half--bot { bottom: 0; }
+
+.loader__inner {
+  position: relative; z-index: 2; text-align: center;
+  transition: opacity .3s ease, transform .5s cubic-bezier(.76,0,.24,1);
+}
+.loader__issue {
+  font-family: var(--display); text-transform: uppercase;
+  font-size: clamp(28px, 6vw, 74px); line-height: .9; letter-spacing: -.02em;
+}
+.loader__sub {
+  font-family: var(--comic); color: var(--red);
+  font-size: clamp(18px, 2.4vw, 30px); margin-top: 8px;
+}
+.loader__bar {
+  width: min(320px, 62vw); height: 12px; margin: 20px auto 0;
+  border: 3px solid var(--ink); background: var(--paper);
+}
+/* No CSS transition here: the script already eases the value every frame, and
+   a transition on top makes the rendered bar lag its own percentage label. */
+.loader__fill { height: 100%; width: 0; background: var(--red); }
+.loader__pct { font-family: var(--body); font-size: 12px; margin-top: 8px; color: var(--ink-soft); }
+
+/* The web being spun, drawn on with a dash offset. */
+.loader__web { display: block; margin: 0 auto 14px; }
+.loader__web path, .loader__web circle {
+  stroke-dasharray: 1400; stroke-dashoffset: 1400;
+  animation: spin-web 1.5s ease-out forwards;
+}
+@keyframes spin-web { to { stroke-dashoffset: 0; } }
+
+.loader.is-done { pointer-events: none; }
+.loader.is-done .loader__half--top { transform: translateY(-102%); }
+.loader.is-done .loader__half--bot { transform: translateY(102%); }
+.loader.is-done .loader__inner { opacity: 0; transform: scale(.9); }
+
+@media (prefers-reduced-motion: reduce) {
+  .loader { animation: loaderBail 0s .1s forwards; }
+  .loader__half, .loader__inner { transition: none; }
+  .loader__web path, .loader__web circle { animation: none; stroke-dashoffset: 0; }
+}
+
+/* ============================================================
+   SPIDER — now fixed to the viewport and following the pointer
+   ============================================================ */
+.spider {
+  position: fixed; top: 0; left: 0; z-index: 30;
+  /* Explicit width. Left to shrink-to-fit it resolved to the viewport, and
+     the auto-margined thread and body then centred inside *that* — putting
+     the spider off the right edge while its transform looked correct. The
+     script offsets by half this value to centre it on the pointer. */
+  width: 86px;
+  pointer-events: none; will-change: transform;
+  animation: none;                 /* the sway is driven in JS now */
+}
+.spider__thread {
+  display: block; width: 2px; margin: 0 auto; height: 140px;
+  background: linear-gradient(180deg, transparent, var(--ink) 8%, var(--ink));
+}
+.spider__body { display: block; margin: -2px auto 0; }
+@media (max-width: 700px) { .spider { transform-origin: top center; } }

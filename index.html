@@ -20,10 +20,6 @@
 </head>
 <body>
 
-<!-- ══════════════ HERO ══════════════ -->
-<header class="hero">
-  <span class="web web--tl" aria-hidden="true"></span>
-  <span class="web web--br" aria-hidden="true"></span>
 <div class="spider" aria-hidden="true">
   <span class="spider__thread"></span>
   <svg class="spider__body" width="86" height="66" viewBox="0 0 86 66" fill="none">
@@ -44,6 +40,28 @@
     <circle cx="47" cy="23" r="2" fill="#F1EADA"/>
   </svg>
 </div>
+
+<div class="loader" id="loader" role="status" aria-label="Loading">
+  <div class="loader__half loader__half--top"></div>
+  <div class="loader__half loader__half--bot"></div>
+  <div class="loader__inner">
+    <svg class="loader__web" width="112" height="112" viewBox="0 0 112 112" fill="none"
+         stroke="#14110D" stroke-width="2.4" aria-hidden="true">
+      <circle cx="56" cy="56" r="14"/><circle cx="56" cy="56" r="27"/>
+      <circle cx="56" cy="56" r="40"/><circle cx="56" cy="56" r="53"/>
+      <path d="M56 3v106M3 56h106M18 18l76 76M94 18l-76 76"/>
+    </svg>
+    <p class="loader__issue">Issue #001</p>
+    <p class="loader__sub">spinning the web&hellip;</p>
+    <div class="loader__bar"><div class="loader__fill"></div></div>
+    <p class="loader__pct">0%</p>
+  </div>
+</div>
+
+<!-- ══════════════ HERO ══════════════ -->
+<header class="hero">
+  <span class="web web--tl" aria-hidden="true"></span>
+  <span class="web web--br" aria-hidden="true"></span>
   <div class="wrap" style="width:100%">
     <div class="hero__issue" data-fx="rise">
       <span class="stamp stamp--red">Issue #001</span>
@@ -108,7 +126,7 @@
   <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">Page 1 — origin story</p>
-    <h2 class="section-title" data-fx="rise">An ordinary<br>codebase…</h2>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">An ordinary<br>codebase…</h2>
     <p class="section-sub" data-fx="rise">
       …until you multiply it by thirty-four. Five years, four companies, and one
       consistent lesson: everything that is a shortcut at one app is a release
@@ -116,28 +134,28 @@
     </p>
 
     <div class="origin__grid">
-      <article class="beat panel panel--tilt-l" data-fx="rise">
+      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
         <p class="beat__no">01 / 04</p>
         <span class="tape-print beat__art"><img src="art/log.png" alt=""></span>
         <h3>Freelance, 2021</h3>
         <p>Six apps across crypto, fashion, logistics and automotive. Learned to ship before learning to architect — the right order, it turns out.</p>
       </article>
 
-      <article class="beat panel panel--tilt-r" data-fx="rise">
+      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
         <p class="beat__no">02 / 04</p>
         <span class="tape-print beat__art"><img src="art/plans.png" alt=""></span>
         <h3>Bottlecap &amp; Fastenal</h3>
         <p>Social, dating and e-commerce, then manufacturing tooling. A form builder that renders itself from API config — my first taste of server-driven UI.</p>
       </article>
 
-      <article class="beat panel panel--tilt-l" data-fx="rise">
+      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
         <p class="beat__no">03 / 04</p>
         <span class="tape-print beat__art"><img src="art/voice.png" alt=""></span>
         <h3>Unico Connect</h3>
         <p>Audio-video calling on the Stream SDK. Call state that survives the app lifecycle, background handling, and reconnection through real network drops.</p>
       </article>
 
-      <article class="beat panel panel--tilt-r" data-fx="rise">
+      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
         <p class="beat__no">04 / 04</p>
         <span class="tape-print beat__art"><img src="art/coach.png" alt=""></span>
         <h3>CupidMedia, now</h3>
@@ -154,7 +172,7 @@
   <div class="pin__stage">
     <div class="pin__head">
       <p class="kicker" data-fx="rise">— what I actually do —</p>
-      <h2 class="section-title" data-fx="rise">My powers</h2>
+      <h2 class="section-title" data-fx="rise drift" data-to="-26">My powers</h2>
       <p class="section-sub" style="margin-bottom:0" data-fx="rise">Keep scrolling. The strip moves sideways. →</p>
     </div>
 
@@ -216,7 +234,7 @@
   <span class="fx fx--lime" style="top:12%;right:7%" aria-hidden="true">BANG!</span>
   <div class="wrap">
     <p class="kicker" data-fx="rise" style="color:#B9B1A2">— field report —</p>
-    <h2 class="section-title" data-fx="rise">The<br>numbers</h2>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">The<br>numbers</h2>
     <p class="section-sub" data-fx="rise">Everything below is production, not a side project.</p>
     <div class="stats" data-fx="rise">
       <div class="stat"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
@@ -239,11 +257,11 @@
   <span class="fx fx--blue" style="top:9%;right:5%" aria-hidden="true">POW!</span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">— the missions —</p>
-    <h2 class="section-title" data-fx="rise">Selected<br>work</h2>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">Selected<br>work</h2>
     <p class="section-sub" data-fx="rise">Five that are worth opening. One of them you can run in this browser.</p>
 
     <div class="missions__grid page-grid">
-      <a class="mission mission--wide" data-fx="rise" href="https://rushabhfulkari.github.io/cadence/">
+      <a class="mission mission--wide" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5" href="https://rushabhfulkari.github.io/cadence/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/sessions.png" alt=""></span>
           <div>
@@ -268,7 +286,7 @@
         <p class="mission__tags">Flutter · Kotlin · Swift · Pigeon · SQLite · BLE</p>
       </a>
 
-      <div class="mission" data-fx="rise">
+      <div class="mission" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/feed.png" alt=""></span>
           <div><p class="mission__id">M-02 · 2025 → now</p><h3>CupidMedia</h3></div>
@@ -288,7 +306,7 @@
         <p class="mission__tags">AdMob · Akamai BMP · Age Signals · Sentry</p>
       </div>
 
-      <a class="mission" data-fx="rise" href="https://www.highlandsbrain.com/">
+      <a class="mission" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5" href="https://www.highlandsbrain.com/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/voice.png" alt=""></span>
           <div><p class="mission__id">M-03 · Unico Connect</p><h3>Highlands Brain</h3></div>
@@ -302,7 +320,7 @@
         <p class="mission__tags">Stream SDK · WebRTC · BLoC · platform channels</p>
       </a>
 
-      <a class="mission" data-fx="rise" href="https://www.sergo.com/">
+      <a class="mission" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5" href="https://www.sergo.com/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/plans.png" alt=""></span>
           <div><p class="mission__id">M-04 · Bottlecap</p><h3>Sergo</h3></div>
@@ -316,7 +334,7 @@
         <p class="mission__tags">Server-driven forms · Cubit · PDF</p>
       </a>
 
-      <div class="mission" data-fx="rise">
+      <div class="mission" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/vault.png" alt=""></span>
           <div><p class="mission__id">M-05</p><h3>Apprintly</h3></div>
@@ -344,7 +362,7 @@
 <section class="dispatches" id="dispatches">
   <div class="wrap">
     <p class="kicker" data-fx="rise">— dispatches —</p>
-    <h2 class="section-title" data-fx="rise">Things I<br>wrote down</h2>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">Things I<br>wrote down</h2>
     <p class="section-sub" data-fx="rise">
       Bugs with receipts, mostly. What building production Flutter with an AI in
       the loop actually costs, and the specific things that broke.
@@ -360,7 +378,7 @@
   <span class="web web--br" aria-hidden="true"></span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">— last page —</p>
-    <h2 class="display display--tone contact__big" data-fx="rise"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
+    <h2 class="display display--tone contact__big" data-fx="rise scale" data-from=".9" data-to="1" data-start=".95" data-end=".45"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
     <p class="section-sub" data-fx="rise" style="margin-top:26px">
       Looking for a senior Flutter role in the UK or US. If you are building
       something that has to work offline, talk to hardware, or live inside an app
