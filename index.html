@@ -19,8 +19,48 @@
 <link rel="stylesheet" href="assets/comic.css">
 </head>
 <body>
+<div class="corner-id">
+  <span class="stamp stamp--red">Senior</span>
+  <span class="stamp">Flutter Developer</span>
+  <span class="stamp stamp--blue">Est. 2021 · India</span>
+</div>
+
+<nav class="corner-nav" aria-label="Sections">
+  <button class="corner-nav__btn" type="button" aria-expanded="false" aria-controls="navsheet">
+    <span class="corner-nav__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="corner-nav__label">Menu</span>
+  </button>
+  <div class="corner-nav__sheet" id="navsheet" hidden>
+    <a href="#powers"><span>01</span>My powers</a>
+    <a href="#missions"><span>02</span>Selected work</a>
+    <a href="#origin"><span>03</span>Origin story</a>
+    <a href="#numbers"><span>04</span>The numbers</a>
+    <a href="#dispatches"><span>05</span>Dispatches</a>
+    <a href="blog/"><span>06</span>All writing ↗</a>
+    <a href="https://rushabhfulkari.github.io/cadence/"><span>07</span>Cadence, live ↗</a>
+    <a href="rushabh-fulkari-cv.pdf"><span>08</span>CV / PDF ↗</a>
+    <a href="#contact"><span>09</span>Get in touch</a>
+  </div>
+</nav>
+
+<div class="scrollbug" aria-hidden="true">
+  <span class="scrollbug__thread"></span>
+  <svg class="scrollbug__body" width="44" height="34" viewBox="0 0 86 66" fill="none">
+    <g stroke="#D42A3C" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M34 26C24 18 16 12 4 16"/><path d="M34 32C22 30 13 30 3 37"/>
+      <path d="M34 38C23 42 16 47 9 56"/><path d="M35 43C28 49 25 55 24 63"/>
+      <path d="M52 26C62 18 70 12 82 16"/><path d="M52 32C64 30 73 30 83 37"/>
+      <path d="M52 38C63 42 70 47 77 56"/><path d="M51 43C58 49 61 55 62 63"/>
+    </g>
+    <ellipse cx="43" cy="25" rx="10" ry="8" fill="#D42A3C"/>
+    <ellipse cx="43" cy="41" rx="14" ry="16" fill="#D42A3C"/>
+    <circle cx="39" cy="23" r="2.4" fill="#14110D"/><circle cx="47" cy="23" r="2.4" fill="#14110D"/>
+  </svg>
+</div>
+
 
 <div class="spider" aria-hidden="true">
+  <div class="spider__pivot">
   <span class="spider__thread"></span>
   <svg class="spider__body" width="86" height="66" viewBox="0 0 86 66" fill="none">
     <g stroke="#14110D" stroke-width="3.2" stroke-linecap="round" fill="none">
@@ -39,6 +79,7 @@
     <circle cx="39" cy="23" r="2" fill="#F1EADA"/>
     <circle cx="47" cy="23" r="2" fill="#F1EADA"/>
   </svg>
+  </div>
 </div>
 
 <div class="loader" id="loader" role="status" aria-label="Loading">
@@ -63,12 +104,6 @@
   <span class="web web--tl" aria-hidden="true"></span>
   <span class="web web--br" aria-hidden="true"></span>
   <div class="wrap" style="width:100%">
-    <div class="hero__issue" data-fx="rise">
-      <span class="stamp stamp--red">Issue #001</span>
-      <span class="stamp">The Ship Log</span>
-      <span class="stamp stamp--blue">Est. 2021</span>
-      <span class="kicker">Bengaluru · India</span>
-    </div>
 
     <h1 class="display display--tone hero__name" data-fx="drift" data-to="130">
       <span data-text="Rushabh">Rushabh</span><span data-text="Fulkari">Fulkari</span>
@@ -99,8 +134,8 @@
         </div>
         <div class="hero__card" data-fx="rise" style="transform:rotate(-1.1deg)">
           <h4>Open to</h4>
-          <p>Senior Flutter roles in the UK or US. Offline, hardware, or living
-             inside an app that already exists — that is the part I like.</p>
+          <p>Senior Flutter roles. Offline, hardware, or living inside an app
+             that already exists — that is the part I like.</p>
         </div>
         <div class="hero__card" data-fx="rise" style="transform:rotate(.5deg)">
           <h4>Latest</h4>
@@ -120,50 +155,6 @@
   </div>
 </div>
 
-<!-- ══════════════ ORIGIN ══════════════ -->
-<section class="origin" id="origin">
-  <span class="web web--tr" aria-hidden="true"></span>
-  <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
-  <div class="wrap">
-    <p class="kicker" data-fx="rise">Page 1 — origin story</p>
-    <h2 class="section-title" data-fx="rise drift" data-to="-26">An ordinary<br>codebase…</h2>
-    <p class="section-sub" data-fx="rise">
-      …until you multiply it by thirty-four. Five years, four companies, and one
-      consistent lesson: everything that is a shortcut at one app is a release
-      train at thirty-four.
-    </p>
-
-    <div class="origin__grid">
-      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
-        <p class="beat__no">01 / 04</p>
-        <span class="tape-print beat__art"><img src="art/log.png" alt=""></span>
-        <h3>Freelance, 2021</h3>
-        <p>Six apps across crypto, fashion, logistics and automotive. Learned to ship before learning to architect — the right order, it turns out.</p>
-      </article>
-
-      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
-        <p class="beat__no">02 / 04</p>
-        <span class="tape-print beat__art"><img src="art/plans.png" alt=""></span>
-        <h3>Bottlecap &amp; Fastenal</h3>
-        <p>Social, dating and e-commerce, then manufacturing tooling. A form builder that renders itself from API config — my first taste of server-driven UI.</p>
-      </article>
-
-      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
-        <p class="beat__no">03 / 04</p>
-        <span class="tape-print beat__art"><img src="art/voice.png" alt=""></span>
-        <h3>Unico Connect</h3>
-        <p>Audio-video calling on the Stream SDK. Call state that survives the app lifecycle, background handling, and reconnection through real network drops.</p>
-      </article>
-
-      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
-        <p class="beat__no">04 / 04</p>
-        <span class="tape-print beat__art"><img src="art/coach.png" alt=""></span>
-        <h3>CupidMedia, now</h3>
-        <p>34 flavours, 60M members. Ad monetisation built from zero, age-verification compliance in four jurisdictions, Akamai bot protection, the Sentry migration.</p>
-      </article>
-    </div>
-  </div>
-</section>
 
 <!-- ══════════════ POWERS ══════════════ -->
 <section id="powers" class="pin" style="height:420vh">
@@ -225,28 +216,6 @@
         <p>Claude in the loop daily. Ask for the seam, not the feature; make it write the limitation down; and never let a green test suite stand in for looking.</p>
         <p class="power__tags">Claude · agent loops · tool schemas</p>
       </article>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════ NUMBERS ══════════════ -->
-<section class="numbers" id="numbers">
-  <span class="fx fx--lime" style="top:12%;right:7%" aria-hidden="true">BANG!</span>
-  <div class="wrap">
-    <p class="kicker" data-fx="rise" style="color:#B9B1A2">— field report —</p>
-    <h2 class="section-title" data-fx="rise drift" data-to="-26">The<br>numbers</h2>
-    <p class="section-sub" data-fx="rise">Everything below is production, not a side project.</p>
-    <div class="stats" data-fx="rise">
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="34" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">App flavours, one codebase</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="180" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">Countries served</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="43" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Languages shipped</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="1400" data-suffix="K+" data-start=".95" data-end=".55">0</p><p class="stat__l">Installs per month</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="7" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Ad mediation networks</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="4" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Compliance jurisdictions</p></div>
     </div>
   </div>
 </section>
@@ -350,6 +319,75 @@
   </div>
 </section>
 
+<!-- ══════════════ ORIGIN ══════════════ -->
+<section class="origin" id="origin">
+  <span class="web web--tr" aria-hidden="true"></span>
+  <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
+  <div class="wrap">
+    <p class="kicker" data-fx="rise">Page 1 — origin story</p>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">An ordinary<br>codebase…</h2>
+    <p class="section-sub" data-fx="rise">
+      …until you multiply it by thirty-four. The lesson took four companies to
+      learn: at one app a hardcoded value is a shortcut you regret mildly; at
+      thirty-four it is a store review, a staged rollout and a week of waiting.
+      Scale does not break your architecture — it stops letting you get away
+      with not having one.
+    </p>
+
+    <div class="origin__grid">
+      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
+        <p class="beat__no">01 / 04</p>
+        <span class="tape-print beat__art"><img src="art/coach.png" alt=""></span>
+        <h3>CupidMedia, now</h3>
+        <p>34 flavours, 60M members. Ad monetisation built from zero, age-verification compliance in four jurisdictions, Akamai bot protection, the Sentry migration.</p>
+      </article>
+      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
+        <p class="beat__no">02 / 04</p>
+        <span class="tape-print beat__art"><img src="art/voice.png" alt=""></span>
+        <h3>Unico Connect</h3>
+        <p>Audio-video calling on the Stream SDK. Call state that survives the app lifecycle, background handling, and reconnection through real network drops.</p>
+      </article>
+      <article class="beat panel panel--tilt-r" data-fx="rise slide" data-to="-70" data-start=".92" data-end=".45">
+        <p class="beat__no">03 / 04</p>
+        <span class="tape-print beat__art"><img src="art/plans.png" alt=""></span>
+        <h3>Bottlecap &amp; Fastenal</h3>
+        <p>Social, dating and e-commerce, then manufacturing tooling. A form builder that renders itself from API config — my first taste of server-driven UI.</p>
+      </article>
+      <article class="beat panel panel--tilt-l" data-fx="rise slide" data-to="70" data-start=".92" data-end=".45">
+        <p class="beat__no">04 / 04</p>
+        <span class="tape-print beat__art"><img src="art/log.png" alt=""></span>
+        <h3>Freelance, 2021</h3>
+        <p>Six apps across crypto, fashion, logistics and automotive. Learned to ship before learning to architect — the right order, it turns out.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NUMBERS ══════════════ -->
+<section class="numbers" id="numbers">
+  <span class="fx fx--lime" style="top:12%;right:7%" aria-hidden="true">BANG!</span>
+  <div class="wrap">
+    <p class="kicker" data-fx="rise" style="color:#B9B1A2">— field report —</p>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">The<br>numbers</h2>
+    <p class="section-sub" data-fx="rise">Everything below is production, not a side project.</p>
+    <div class="stats" data-fx="rise">
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="34" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">App flavours, one codebase</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="180" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">Countries served</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="43" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Languages shipped</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="1.4" data-decimals="1" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Installs per month</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="7" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Ad mediation networks</p></div>
+      <div class="stat"><p class="stat__n" data-fx="counter" data-to="4" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Compliance jurisdictions</p></div>
+    </div>
+  </div>
+</section>
+
+
+
+
 <div class="marquee marquee--red marquee--rev">
   <div class="marquee__track">
     <span>Write the limitation down ✦</span>
@@ -380,7 +418,7 @@
     <p class="kicker" data-fx="rise">— last page —</p>
     <h2 class="display display--tone contact__big" data-fx="rise scale" data-from=".9" data-to="1" data-start=".95" data-end=".45"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
     <p class="section-sub" data-fx="rise" style="margin-top:26px">
-      Looking for a senior Flutter role in the UK or US. If you are building
+      Open to senior Flutter roles. If you are building
       something that has to work offline, talk to hardware, or live inside an app
       that already exists — that is the part I like.
     </p>

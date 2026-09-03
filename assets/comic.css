@@ -349,7 +349,7 @@ h2.section-title {
    CONTACT + FOOTER
    ============================================================ */
 .contact { text-align: left; }
-.contact__big { font-size: clamp(48px, 13vw, 168px); }
+.contact__big { font-size: clamp(42px, 10vw, 140px); }
 .contact__links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 footer {
   border-top: var(--panel-border); background: var(--ink); color: #B9B1A2;
@@ -481,8 +481,10 @@ footer a { color: var(--paper); }
 /* ============================================================
    FULL-BLEED LAYOUT
    ============================================================ */
-.hero { padding-inline: var(--gutter); }
-.hero__name { font-size: clamp(56px, 17.5vw, 300px); }
+/* Top padding clears the fixed id badge in the corner — without it the first
+   letter of the name sits behind the stamps. */
+.hero { padding-inline: var(--gutter); padding-top: clamp(124px, 17vh, 200px); }
+.hero__name { font-size: clamp(46px, 12.4vw, 205px); }
 .hero__grid {
   display: grid; gap: clamp(20px, 4vw, 70px); align-items: end;
   grid-template-columns: minmax(0, 1fr);
@@ -507,7 +509,14 @@ section, .hero { position: relative; overflow: hidden; }
 /* Wider grids now that the page is wider. */
 .origin__grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .missions__grid { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
-.stats { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+/* Five across at desktop so ten stats make two full rows. auto-fit was
+   packing eight into the first row and leaving a dead half-row behind. */
+.stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1180px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px)  { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { padding: 26px 20px; }
+.stat__n { font-size: clamp(28px, 3.4vw, 50px); letter-spacing: -.02em; }
+.stat__l { margin-top: 10px; line-height: 1.45; }
 .power { flex: 0 0 clamp(250px, 30vw, 340px); }
 
 /* Dispatches: give the title room to breathe at full width. */
@@ -674,3 +683,112 @@ section, .hero { position: relative; overflow: hidden; }
 }
 .spider__body { display: block; margin: -2px auto 0; }
 @media (max-width: 700px) { .spider { transform-origin: top center; } }
+
+/* ============================================================
+   CORNER FURNITURE — id badge left, menu right
+   ============================================================ */
+.corner-id, .corner-nav {
+  position: fixed; top: clamp(14px, 2vw, 26px); z-index: 60;
+}
+.corner-id { left: clamp(14px, 2vw, 26px); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.corner-id .stamp { font-size: 10px; }
+
+.corner-nav { right: clamp(14px, 2vw, 26px); }
+.corner-nav__btn {
+  display: flex; align-items: center; gap: 9px; cursor: pointer;
+  font-family: var(--display); text-transform: uppercase; font-size: 12px;
+  letter-spacing: .08em; color: var(--paper); background: var(--ink);
+  border: 3px solid var(--ink); box-shadow: var(--shadow-hard-sm);
+  padding: 9px 14px;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), background .2s ease;
+}
+.corner-nav__btn:hover { transform: translate(-2px,-2px); background: var(--red); }
+.corner-nav__bars { display: grid; gap: 3px; }
+.corner-nav__bars i { display: block; width: 16px; height: 2.5px; background: currentColor; transition: transform .25s ease, opacity .2s ease; }
+.corner-nav__btn[aria-expanded="true"] .corner-nav__bars i:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.corner-nav__btn[aria-expanded="true"] .corner-nav__bars i:nth-child(2) { opacity: 0; }
+.corner-nav__btn[aria-expanded="true"] .corner-nav__bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.corner-nav__sheet {
+  position: absolute; top: calc(100% + 10px); right: 0; min-width: 264px;
+  background: var(--paper); border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard); padding: 8px;
+  animation: sheetIn .28s cubic-bezier(.34,1.5,.64,1) both;
+}
+@keyframes sheetIn { from { opacity: 0; transform: translateY(-8px) scale(.97); } }
+.corner-nav__sheet a {
+  display: flex; align-items: baseline; gap: 12px; padding: 9px 12px;
+  text-decoration: none; font-size: 13px;
+  border-bottom: 1px solid var(--border, rgba(20,17,13,.12));
+  transition: background .16s ease, padding-left .16s ease;
+}
+.corner-nav__sheet a:last-child { border-bottom: 0; }
+.corner-nav__sheet a span {
+  font-family: var(--display); font-size: 10px; color: var(--red); letter-spacing: .08em;
+}
+.corner-nav__sheet a:hover { background: var(--ink); color: var(--paper); padding-left: 18px; }
+.corner-nav__sheet a:hover span { color: var(--lime); }
+@media (prefers-reduced-motion: reduce) { .corner-nav__sheet { animation: none; } }
+@media (max-width: 560px) { .corner-nav__label { display: none; } .corner-id .stamp:nth-child(2) { display: none; } }
+
+/* ============================================================
+   SCROLLBUG — a red spider riding the page as a scroll indicator
+   ============================================================ */
+.scrollbug {
+  position: fixed; right: clamp(10px, 1.6vw, 22px); top: 0; z-index: 45;
+  width: 44px; pointer-events: none; will-change: transform;
+}
+.scrollbug__thread {
+  position: absolute; top: 0; left: 50%; width: 2px; height: 0;
+  background: var(--red); transform: translateX(-50%);
+}
+.scrollbug__body { position: relative; display: block; margin: 0 auto; }
+@media (max-width: 620px) { .scrollbug { display: none; } }
+
+/* ============================================================
+   MARQUEE — tilted, larger, evenly spaced
+   ============================================================ */
+.marquee {
+  /* Tilted up toward the right and over-wide, so the ends run off the page
+     instead of showing a cut edge where the rotation lifts the corner. */
+  transform: rotate(-2.2deg) scale(1.06);
+  margin-block: clamp(28px, 5vw, 64px);
+  padding: 16px 0;
+}
+.marquee--rev { transform: rotate(1.8deg) scale(1.06); }
+.marquee__track {
+  gap: 0;                       /* spacing now lives on the item, both sides */
+  font-size: clamp(16px, 1.9vw, 26px);
+  letter-spacing: .04em;
+}
+.marquee__track span { padding-inline: clamp(20px, 2.4vw, 40px); }
+
+/* ============================================================
+   POWERS — close the dead space
+   ============================================================ */
+.pin__stage { justify-content: flex-start; padding-top: clamp(70px, 12vh, 130px); }
+.pin__head { padding-bottom: clamp(16px, 2.4vh, 30px); }
+.pin__head .section-title { margin-bottom: 4px; }
+
+/* ============================================================
+   CONTACT — the buttons were washing out mid-animation
+   ============================================================ */
+.contact .btn, .contact .section-sub { opacity: 1; }
+
+/* ============================================================
+   CLICK WEB — a burst of webbing wherever you click
+   ============================================================ */
+.clickweb {
+  position: fixed; z-index: 55; pointer-events: none;
+  translate: -50% -50%;
+  animation: clickweb .62s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes clickweb {
+  from { opacity: .95; scale: .12; rotate: -22deg; }
+  to   { opacity: 0;   scale: 1;   rotate: 6deg; }
+}
+
+/* The pendulum hangs from the top of the thread, so the whole assembly —
+   thread and body together — rotates about the anchor point rather than the
+   spider spinning on the spot. */
+.spider__pivot { transform-origin: top center; will-change: transform; }

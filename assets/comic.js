@@ -32,9 +32,11 @@
         // slide or scale, and those want `data-to` for something else — one
         // shared number would make a 70px sideways slide into a 70px drop.
         riseY: num(el, 'data-rise', 40),
+        dp: num(el, 'data-decimals', 0),
         start: num(el, 'data-start', 1),      // enters when its top hits 100% vh
         end: num(el, 'data-end', 0.2),        // done when its top hits 20% vh
-        done: false
+        done: false,
+        pin: el.closest ? el.closest('.pin') : null
       };
     });
 
@@ -58,12 +60,28 @@
   function frame() {
     ticking = false;
     var vh = window.innerHeight;
+    var atBottom = (window.scrollY + vh) >= (document.body.scrollHeight - 4);
 
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
       var r = it.el.getBoundingClientRect();
-      // Progress of this element through its own pass, 0 → 1.
-      var p = clamp01((it.start - r.top / vh) / (it.start - it.end));
+      var p;
+
+      if (it.pin) {
+        // A sticky element's own rect barely moves, so measuring the track
+        // gives a progress that never advances — which is exactly why the
+        // strip sat still. Progress comes from the tall .pin ancestor
+        // scrolling past instead.
+        var pr = it.pin.getBoundingClientRect();
+        var travel = it.pin.offsetHeight - vh;
+        p = travel > 0 ? clamp01(-pr.top / travel) : 0;
+      } else {
+        p = clamp01((it.start - r.top / vh) / (it.start - it.end));
+        // At the very bottom of the document an element can never reach its
+        // end threshold, so it would stay part-faded forever. That is why the
+        // contact buttons looked washed out.
+        if (atBottom) p = 1;
+      }
       apply(it, p, r, vh);
     }
   }
@@ -99,7 +117,7 @@
         case 'counter':
           if (!it.done) {
             var target = it.to;
-            var now = Math.round(target * e);
+            var now = (target * e).toFixed(it.dp);
             el.textContent = (el.getAttribute('data-prefix') || '') + now +
                              (el.getAttribute('data-suffix') || '');
             if (p >= 1) it.done = true;
@@ -143,50 +161,106 @@
     }, 2500);
   }
 
-  /* --- the spider follows the pointer -------------------------------- */
-  /* Eased rather than pinned to the cursor: a spider that tracks exactly is a
-     cursor decoration, and one that lags and overshoots is an animal on a
-     thread. The tilt comes from horizontal velocity, so it swings into the
-     direction of travel and settles. */
+  /* --- the hero spider: a pendulum on a fixed thread ------------------ */
+  /* The thread length never changes — a spider does not telescope. The body
+     swings on a damped spring driven by pointer velocity, so it overshoots,
+     comes back, and settles rather than sliding to a stop. It hangs from a
+     fixed anchor and fades out once the hero has scrolled away. */
   var spider = document.querySelector('.spider');
   if (spider && !reduced) {
-    var thread = spider.querySelector('.spider__thread');
-    var restLen = 150;
-    var targetX = window.innerWidth * 0.72, targetLen = restLen;
-    var x = targetX, len = restLen, lastX = x, tilt = 0;
+    var pivot = spider.querySelector('.spider__pivot');
+    var anchorX = window.innerWidth * 0.62;
+    var targetX = anchorX;
+    var angle = 0, angVel = 0;
+    var lastPointerX = null;
     var idle = true;
 
     window.addEventListener('pointermove', function (e) {
       idle = false;
+      if (lastPointerX !== null) {
+        // Pointer speed becomes a shove on the pendulum. Capped, or a fast
+        // flick sends it spinning like a propeller.
+        var shove = Math.max(-3.2, Math.min(3.2, (e.clientX - lastPointerX) * 0.05));
+        angVel += shove;
+      }
+      lastPointerX = e.clientX;
       targetX = e.clientX;
-      // Drop toward the pointer, but never past a comfortable reach, and
-      // never above the thread's resting length.
-      targetLen = Math.max(restLen, Math.min(e.clientY - 26, window.innerHeight * 0.75));
     }, { passive: true });
 
-    (function loop(t) {
-      if (idle) {
-        // Nothing has moved yet — drift gently so it reads as alive.
-        targetX = window.innerWidth * 0.72 +
-                  Math.sin(t / 1400) * Math.min(70, window.innerWidth * 0.05);
+    window.addEventListener('resize', function () {
+      anchorX = window.innerWidth * 0.62;
+    }, { passive: true });
+
+    (function swing(t) {
+      // Where the pointer is, relative to the anchor, is where the pendulum
+      // wants to rest — so it leans toward the cursor and hangs there.
+      var lean = idle
+        ? Math.sin(t / 1500) * 7
+        : Math.max(-34, Math.min(34, (targetX - anchorX) * 0.045));
+
+      // Damped spring toward the rest angle.
+      angVel += (lean - angle) * 0.012;   // stiffness
+      angVel *= 0.965;                     // damping — high enough to settle
+      angle += angVel;
+
+      var hero = document.querySelector('.hero');
+      var fade = 1;
+      if (hero) {
+        var b = hero.getBoundingClientRect().bottom;
+        // Gone by the time the hero has left: it belongs to the first screen.
+        fade = clamp01(b / (window.innerHeight * 0.55));
       }
-      x   += (targetX - x) * 0.055;      // slow follow: the lag is the charm
-      len += (targetLen - len) * 0.075;
+      spider.style.opacity = fade.toFixed(3);
+      spider.style.visibility = fade < 0.02 ? 'hidden' : 'visible';
+      spider.style.transform = 'translate3d(' + (anchorX - 43) + 'px,0,0)';
+      if (pivot) pivot.style.transform = 'rotate(' + angle.toFixed(2) + 'deg)';
 
-      var vx = x - lastX;
-      lastX = x;
-      // Swing into the direction of travel, capped so it never spins.
-      tilt += ((-vx * 1.6) - tilt) * 0.1;
-      tilt = Math.max(-26, Math.min(26, tilt));
-
-      thread.style.height = len.toFixed(1) + 'px';
-      spider.style.transformOrigin = 'top center';
-      spider.style.transform =
-        'translate3d(' + (x - 43) + 'px,0,0) rotate(' + tilt.toFixed(2) + 'deg)';
-      requestAnimationFrame(loop);
+      requestAnimationFrame(swing);
     })(0);
-  } else if (spider) {
-    spider.style.transform = 'translate3d(' + (window.innerWidth * 0.72 - 43) + 'px,0,0)';
+  }
+
+  /* --- the red spider that rides the scrollbar ------------------------ */
+  var bug = document.querySelector('.scrollbug');
+  if (bug) {
+    var bugThread = bug.querySelector('.scrollbug__thread');
+    var shownY = 0;
+    (function ride() {
+      var max = document.body.scrollHeight - window.innerHeight;
+      var progress = max > 0 ? window.scrollY / max : 0;
+      // Travel between a little below the top and a little above the bottom,
+      // so it never collides with the menu or runs off the end.
+      // Starts below the corner menu, ends above the assistant, so it never
+      // collides with either.
+      var top = 132, bottom = window.innerHeight - 110;
+      var y = top + (bottom - top) * progress;
+      shownY += (y - shownY) * 0.16;      // eased, so it trails the scroll
+      bug.style.transform = 'translate3d(0,' + shownY.toFixed(1) + 'px,0)';
+      if (bugThread) bugThread.style.height = shownY.toFixed(1) + 'px';
+      requestAnimationFrame(ride);
+    })();
+  }
+
+  /* --- a burst of webbing wherever you click -------------------------- */
+  if (!reduced) {
+    document.addEventListener('pointerdown', function (e) {
+      // Skip real controls: a web erupting out of the CV link is noise.
+      if (e.target.closest && e.target.closest('a, button, input, textarea, select')) return;
+      var web = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      web.setAttribute('class', 'clickweb');
+      web.setAttribute('width', '190'); web.setAttribute('height', '190');
+      web.setAttribute('viewBox', '0 0 120 120'); web.setAttribute('fill', 'none');
+      web.setAttribute('stroke', '#14110D'); web.setAttribute('stroke-width', '1.6');
+      web.innerHTML =
+        '<circle cx="60" cy="60" r="14"/><circle cx="60" cy="60" r="27"/>' +
+        '<circle cx="60" cy="60" r="41"/><circle cx="60" cy="60" r="55"/>' +
+        '<path d="M60 3v114M3 60h114M19 19l82 82M101 19l-82 82"/>';
+      web.style.left = e.clientX + 'px';
+      web.style.top = e.clientY + 'px';
+      document.body.appendChild(web);
+      // Removed on its own animation end rather than a guessed timeout, so a
+      // slow frame never leaves one behind.
+      web.addEventListener('animationend', function () { web.remove(); });
+    }, { passive: true });
   }
 
   /* --- marquees ------------------------------------------------------ */
@@ -276,6 +350,31 @@
     }
     // Belt and braces on top of the CSS bail-out.
     setTimeout(finish, 4000);
+  }
+
+  /* --- corner menu ---------------------------------------------------- */
+  var navBtn = document.querySelector('.corner-nav__btn');
+  var navSheet = document.getElementById('navsheet');
+  if (navBtn && navSheet) {
+    var setOpen = function (open) {
+      navSheet.hidden = !open;
+      navBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    navBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(navSheet.hidden);
+    });
+    // Closing on outside click and on Escape, because a panel you can only
+    // dismiss with the button that opened it is a panel people get stuck in.
+    document.addEventListener('click', function (e) {
+      if (!navSheet.hidden && !navSheet.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !navSheet.hidden) { setOpen(false); navBtn.focus(); }
+    });
+    navSheet.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setOpen(false);
+    });
   }
 
   var y = document.querySelector('[data-year]');
