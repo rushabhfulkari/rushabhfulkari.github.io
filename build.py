@@ -34,7 +34,7 @@ HEAD = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/comic.css">
+<link rel="stylesheet" href="../assets/comic.css?v=202609031505">
 </head>
 <body>
 <article class="article">
@@ -115,7 +115,7 @@ def main():
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/comic.css">
+<link rel="stylesheet" href="../assets/comic.css?v=202609031505">
 </head>
 <body>
 <section style="padding-top:clamp(80px,12vh,130px)">
@@ -136,7 +136,7 @@ def main():
     Senior Flutter Developer · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a></p>
   </div>
 </footer>
-<script src="../assets/comic.js"></script>
+<script src="../assets/comic.js?v=202609031505"></script>
 </body>
 </html>
 """)

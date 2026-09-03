@@ -131,7 +131,7 @@ a { color: inherit; }
 .panel--tilt-r { transform: rotate(1deg); }
 
 section { padding: clamp(72px, 12vh, 150px) var(--gutter); }
-.wrap { max-width: 1680px; margin: 0 auto; }
+.wrap { position: relative; z-index: 1; max-width: 1680px; margin: 0 auto; }
 .bleed { max-width: none; margin: 0; }
 .measure { max-width: var(--measure); }
 
@@ -560,7 +560,9 @@ section, .hero { position: relative; overflow: hidden; }
 }
 
 /* Small spiders, parked in corners and drifting on scroll. */
-.crawler { position: absolute; z-index: 3; pointer-events: none; opacity: .9; }
+/* Behind the text, above the paper — a spider in the corner is scenery, not
+   an obstacle. .wrap is lifted to z-index 1 so content always wins. */
+.crawler { position: absolute; z-index: 0; pointer-events: none; opacity: .85; }
 
 /* A real comic page: black gutters showing between the panels. */
 .page-grid {
@@ -774,15 +776,28 @@ section, .hero { position: relative; overflow: hidden; }
 .assistant { position: fixed; right: 18px; bottom: 18px; z-index: 70; display: flex; align-items: flex-end; gap: 10px; }
 
 .chat {
-  position: fixed; right: 18px; bottom: 18px; z-index: 71;
-  width: min(392px, calc(100vw - 36px));
-  height: min(600px, calc(100vh - 36px));
+  /* Full screen by default, and only a floating card when there is provably
+     room for one. The old rule did it the other way round — a floating panel
+     that shrank on small screens — and any viewport it mis-measured (a zoomed
+     phone, a browser whose visual viewport differs from its layout viewport)
+     got a 200px-wide window with a one-line message log. Defaulting to full
+     screen means the worst case is a chat that takes the whole screen, which
+     is fine, rather than one that is unusable. */
+  position: fixed; inset: 0; z-index: 71;
   display: flex; flex-direction: column; overflow: hidden;
   background: var(--paper); border: 3px solid var(--ink);
-  box-shadow: 10px 10px 0 var(--ink);
   transform-origin: bottom right;
   animation: chatIn .32s cubic-bezier(.34,1.5,.64,1) both;
 }
+
+@media (min-width: 720px) and (min-height: 640px) {
+  .chat {
+    inset: auto 18px 18px auto;
+    width: 392px; height: min(620px, calc(100dvh - 36px));
+    box-shadow: 10px 10px 0 var(--ink);
+  }
+}
+
 @keyframes chatIn { from { opacity: 0; transform: scale(.86) translateY(18px); } }
 .chat[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .chat { animation: none; } }
@@ -994,12 +1009,12 @@ section, .hero { position: relative; overflow: hidden; }
 .rule__line em { font-style: normal; color: var(--red); }
 
 /* ============================================================
-   CHAT — layout that survives a short viewport
+   CHAT — details that hold up on a short screen
    ============================================================ */
-/* The log was collapsing to a single line on a phone: four chips stacked
-   four-high, plus the header and the composer, left it about 70px. The chips
-   are now one scrolling row, and the log has a floor it cannot go under. */
-.chat__log { min-height: 140px; }
+/* The log kept collapsing to one line: four chips stacked four-high, plus the
+   header and the composer, left it about seventy pixels. One scrolling row of
+   chips, and a floor the log cannot go under. */
+.chat__log { min-height: 30vh; }
 
 .chat__chips {
   flex-wrap: nowrap; overflow-x: auto; gap: 8px;
@@ -1009,14 +1024,8 @@ section, .hero { position: relative; overflow: hidden; }
 .chat__chips::-webkit-scrollbar { display: none; }
 .chat__chips button { white-space: nowrap; flex: none; }
 
-@media (max-height: 720px), (max-width: 460px) {
-  /* Full-bleed on anything small: a floating panel on a phone wastes the
-     edges it cannot use anyway. */
-  .chat {
-    right: 8px; left: 8px; bottom: 8px; top: 8px;
-    width: auto; height: auto;
-  }
+@media (max-width: 719px) {
   .chat__name { font-size: 22px; }
-  .chat__bar { padding: 10px 12px; }
-  .chat__form { padding: 10px 12px; }
+  .chat__bar, .chat__form { padding: 10px 12px; }
+  .chat__log { min-height: 0; }        /* flex already gives it everything */
 }
