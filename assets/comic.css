@@ -277,7 +277,11 @@ h2.section-title {
   display: flex; flex-direction: column; gap: 10px;
   transition: transform .2s cubic-bezier(.34,1.56,.64,1);
 }
-.power:hover { transform: translateY(-5px) rotate(-.6deg); }
+/* No hover transform: the strip drives each card's transform on every frame,
+   so a hover rule here would be overwritten mid-gesture and flicker. The
+   shadow carries the hover instead. */
+.power { transition: box-shadow .18s ease; will-change: transform, opacity; }
+.power:hover { box-shadow: 11px 11px 0 var(--ink); }
 .power__no { font-family: var(--display); font-size: 30px; color: var(--red); line-height: 1; }
 .power h3 { font-family: var(--display); text-transform: uppercase; font-size: 19px; margin: 0; line-height: 1.05; }
 .power p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
@@ -349,7 +353,10 @@ h2.section-title {
    CONTACT + FOOTER
    ============================================================ */
 .contact { text-align: left; }
+/* Stacked, like the reference splash: the spans carry the line break rather
+   than a <br>, so the outline line can be styled independently. */
 .contact__big { font-size: clamp(42px, 10vw, 140px); }
+.contact__big span { display: block; }
 .contact__links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 footer {
   border-top: var(--panel-border); background: var(--ink); color: #B9B1A2;
@@ -668,6 +675,8 @@ section, .hero { position: relative; overflow: hidden; }
    SPIDER — now fixed to the viewport and following the pointer
    ============================================================ */
 .spider {
+  /* Below the menu and the id badge (z 60) so it passes behind them rather
+     than colliding, and above the page content so it is never clipped. */
   position: fixed; top: 0; left: 0; z-index: 30;
   /* Explicit width. Left to shrink-to-fit it resolved to the viewport, and
      the auto-margined thread and body then centred inside *that* — putting
@@ -678,8 +687,12 @@ section, .hero { position: relative; overflow: hidden; }
   animation: none;                 /* the sway is driven in JS now */
 }
 .spider__thread {
-  display: block; width: 2px; margin: 0 auto; height: 140px;
-  background: linear-gradient(180deg, transparent, var(--ink) 8%, var(--ink));
+  display: block; width: 2px; margin: 0 auto;
+  /* Long enough that the body hangs below the corner furniture. A short
+     thread put the spider level with the menu and the id badge, which read as
+     a sticker rather than something dangling. */
+  height: clamp(190px, 30vh, 340px);
+  background: linear-gradient(180deg, transparent, var(--ink) 6%, var(--ink));
 }
 .spider__body { display: block; margin: -2px auto 0; }
 @media (max-width: 700px) { .spider { transform-origin: top center; } }
@@ -792,3 +805,228 @@ section, .hero { position: relative; overflow: hidden; }
    thread and body together — rotates about the anchor point rather than the
    spider spinning on the spot. */
 .spider__pivot { transform-origin: top center; will-change: transform; }
+
+/* ============================================================
+   THE ASSISTANT — a comic-panel chat window
+   ============================================================ */
+.assistant { position: fixed; right: 18px; bottom: 18px; z-index: 70; display: flex; align-items: flex-end; gap: 10px; }
+
+.chat {
+  position: fixed; right: 18px; bottom: 18px; z-index: 71;
+  width: min(392px, calc(100vw - 36px));
+  height: min(600px, calc(100vh - 36px));
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--paper); border: 3px solid var(--ink);
+  box-shadow: 10px 10px 0 var(--ink);
+  transform-origin: bottom right;
+  animation: chatIn .32s cubic-bezier(.34,1.5,.64,1) both;
+}
+@keyframes chatIn { from { opacity: 0; transform: scale(.86) translateY(18px); } }
+.chat[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .chat { animation: none; } }
+
+.chat__bar {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--red); color: var(--paper);
+  border-bottom: 3px solid var(--ink); padding: 12px 14px; flex: none;
+}
+.chat__id { flex: 1 1 auto; min-width: 0; }
+.chat__name {
+  font-family: var(--comic); font-size: 26px; line-height: 1;
+  letter-spacing: .02em; margin: 0;
+}
+.chat__role {
+  margin: 2px 0 0; font-size: 9.5px; letter-spacing: .16em;
+  text-transform: uppercase; opacity: .85;
+}
+.chat__close {
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid var(--paper); background: transparent; color: var(--paper);
+  cursor: pointer; font-size: 15px; line-height: 1;
+  display: grid; place-items: center;
+  transition: background .16s ease, transform .16s ease;
+}
+.chat__close:hover { background: rgba(255,255,255,.2); transform: rotate(90deg); }
+
+.chat__log {
+  flex: 1 1 auto; overflow-y: auto; padding: 16px 14px 8px;
+  display: flex; flex-direction: column; gap: 12px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(20,17,13,.13) 1px, transparent 0);
+  background-size: 9px 9px;
+}
+.msg {
+  max-width: 86%; padding: 11px 14px; font-size: 13.5px; line-height: 1.55;
+  border: 2.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  animation: msgIn .26s cubic-bezier(.34,1.5,.64,1) both;
+}
+@keyframes msgIn { from { opacity: 0; transform: translateY(9px) scale(.97); } }
+.msg--bot { align-self: flex-start; background: #FFFDF7; border-radius: 4px 16px 16px 16px; }
+.msg--you { align-self: flex-end; background: var(--red); color: var(--paper); border-radius: 16px 4px 16px 16px; }
+.msg p { margin: 0 0 8px; }
+.msg p:last-child { margin: 0; }
+.msg a { color: var(--red); font-weight: 600; }
+.msg--you a { color: var(--paper); }
+.msg strong { background: linear-gradient(transparent 62%, rgba(201,229,82,.7) 62%); }
+
+.msg--think {
+  align-self: flex-start; display: flex; align-items: center; gap: 9px;
+  font-family: var(--display); font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; background: #FFFDF7; border-radius: 4px 16px 16px 16px;
+}
+.msg--think i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--ink);
+  animation: blip 1s infinite ease-in-out;
+}
+.msg--think i:nth-child(3) { animation-delay: .16s; }
+.msg--think i:nth-child(4) { animation-delay: .32s; }
+@keyframes blip { 0%,100% { opacity: .25; transform: translateY(0); } 45% { opacity: 1; transform: translateY(-3px); } }
+
+.chat__chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px 14px 14px; flex: none; }
+.chat__chips button {
+  font-family: var(--display); font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer;
+  background: var(--paper); color: var(--ink);
+  border: 2.5px solid var(--ink); border-radius: 999px; padding: 6px 13px;
+  transition: background .16s ease, color .16s ease, transform .16s cubic-bezier(.34,1.56,.64,1);
+}
+.chat__chips button:hover { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
+
+.chat__form {
+  display: flex; gap: 9px; align-items: center; flex: none;
+  padding: 12px 14px; border-top: 3px solid var(--ink); background: var(--paper-deep);
+}
+.chat__input {
+  flex: 1 1 auto; min-width: 0; font: inherit; font-size: 13px;
+  padding: 11px 16px; border-radius: 999px;
+  border: 2.5px solid var(--ink); background: var(--paper); color: var(--ink);
+}
+.chat__input::placeholder { color: var(--ink-faint); }
+.chat__input:focus { outline: 3px solid var(--lime); outline-offset: 1px; }
+.chat__send {
+  flex: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
+  background: var(--red); color: var(--paper);
+  border: 2.5px solid var(--ink); font-size: 15px;
+  display: grid; place-items: center;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1);
+}
+.chat__send:hover { transform: scale(1.09) rotate(-8deg); }
+.chat__send:disabled { opacity: .45; cursor: default; transform: none; }
+
+@media (max-width: 460px) {
+  .chat { right: 10px; bottom: 10px; width: calc(100vw - 20px); height: calc(100vh - 20px); }
+}
+
+/* ============================================================
+   TOP BAR — logo left, sections right, one red call to action
+   ============================================================ */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; z-index: 65;
+  display: flex; align-items: center; gap: 18px;
+  padding: 10px clamp(14px, 2.4vw, 30px);
+  background: rgba(20, 17, 13, .96);
+  border-bottom: 3px solid var(--ink);
+  backdrop-filter: blur(6px);
+}
+.topbar__logo {
+  display: flex; align-items: center; gap: 9px; text-decoration: none;
+  color: var(--paper); font-family: var(--comic); font-size: 22px;
+  letter-spacing: .03em; line-height: 1; flex: none;
+}
+.topbar__logo svg { display: block; }
+.topbar__spacer { flex: 1 1 auto; }
+.topbar__links { display: flex; align-items: center; gap: clamp(12px, 1.8vw, 30px); }
+.topbar__links a {
+  color: var(--paper); text-decoration: none;
+  font-family: var(--display); font-size: 11px; letter-spacing: .13em;
+  text-transform: uppercase; position: relative; padding: 4px 0;
+  transition: color .18s ease;
+}
+.topbar__links a::after {
+  content: ''; position: absolute; left: 0; right: 100%; bottom: 0; height: 2px;
+  background: var(--red); transition: right .22s cubic-bezier(.2,.8,.2,1);
+}
+.topbar__links a:hover { color: var(--red); }
+.topbar__links a:hover::after { right: 0; }
+.topbar__cta {
+  background: var(--red); color: var(--paper); text-decoration: none;
+  font-family: var(--display); font-size: 11px; letter-spacing: .13em;
+  text-transform: uppercase; padding: 9px 16px; border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink); flex: none;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), background .18s ease;
+}
+.topbar__cta:hover { transform: translate(-2px,-2px); background: var(--red-deep); }
+@media (max-width: 900px) { .topbar__links { display: none; } }
+
+/* Everything shifts down to clear the bar. */
+.corner-id { top: calc(clamp(14px, 2vw, 26px) + 56px); }
+.corner-nav { top: calc(clamp(14px, 2vw, 26px) + 56px); }
+@media (min-width: 901px) { .corner-nav { display: none; } }
+/* Clears the fixed top bar *and* the stamp stack beneath it. */
+.hero { padding-top: clamp(250px, 30vh, 330px); }
+
+/* ============================================================
+   DARK SECTION — big web strands stretched across the ground
+   ============================================================ */
+.section--dark {
+  background: #0E0C0A; color: var(--paper);
+  border-block: 4px solid var(--ink);
+}
+.section--dark h2.section-title, .section--dark .stat__l { color: var(--paper); }
+.section--dark .section-sub { color: #A9A296; }
+.section--dark .kicker { color: #8E877C; }
+
+/* A single large web, drawn once and stretched — not the small corner motif.
+   Strands are barely lighter than the ground, so they read as texture from a
+   distance and as webbing up close. */
+.webfield {
+  position: absolute; inset: -12% -6%; z-index: 0; pointer-events: none;
+  opacity: .5;
+  background:
+    repeating-conic-gradient(from -14deg at 8% -8%,
+      #2B2721 0deg .12deg, transparent .12deg 9deg),
+    repeating-radial-gradient(circle at 8% -8%,
+      transparent 0 92px, #2B2721 92px 93.4px),
+    repeating-conic-gradient(from 22deg at 104% 112%,
+      #262320 0deg .12deg, transparent .12deg 11deg),
+    repeating-radial-gradient(circle at 104% 112%,
+      transparent 0 118px, #262320 118px 119.4px);
+}
+.section--dark > .wrap { position: relative; z-index: 1; }
+
+/* Outline-only lettering, for the second line of a splash. */
+.display--outline {
+  color: transparent;
+  -webkit-text-stroke: 3px var(--paper);
+  letter-spacing: -.01em;
+}
+.section--dark .display--outline { -webkit-text-stroke-color: var(--paper); }
+
+/* ============================================================
+   SCRIPT ACCENTS & GOLD CARDS
+   ============================================================ */
+.script { font-family: var(--comic); color: var(--red); font-size: 1.22em; letter-spacing: .02em; }
+.section--dark .script { color: var(--accent); }
+
+.card-gold {
+  display: inline-block; background: var(--accent);
+  border: 4px solid var(--ink); box-shadow: 9px 9px 0 var(--ink);
+  padding: 20px 26px; transform: rotate(-3deg);
+  font-family: var(--comic); font-size: clamp(20px, 2.6vw, 34px);
+  line-height: 1.15; color: var(--ink); max-width: 22ch;
+}
+
+/* ============================================================
+   THE RULE — a splash quote, words alternating black and red
+   ============================================================ */
+.rule { text-align: center; }
+.rule__eyebrow, .rule__attrib {
+  font-family: var(--comic); color: var(--red); font-size: clamp(15px, 1.8vw, 22px);
+  letter-spacing: .06em;
+}
+.rule__attrib { color: var(--ink-faint); }
+.rule__line {
+  font-family: var(--display); text-transform: uppercase;
+  font-size: clamp(34px, 8.2vw, 116px); line-height: .9;
+  letter-spacing: -.025em; margin: 18px 0;
+}
+.rule__line em { font-style: normal; color: var(--red); }

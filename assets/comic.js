@@ -34,7 +34,11 @@
         riseY: num(el, 'data-rise', 40),
         dp: num(el, 'data-decimals', 0),
         start: num(el, 'data-start', 1),      // enters when its top hits 100% vh
-        end: num(el, 'data-end', 0.2),        // done when its top hits 20% vh
+        // Completes once its top reaches 62% of the viewport. The old 20%
+        // meant anything sitting low on the page — the contact links, most
+        // obviously — could never scroll high enough to finish, and stayed
+        // part-faded forever.
+        end: num(el, 'data-end', 0.62),
         done: false,
         pin: el.closest ? el.closest('.pin') : null
       };
@@ -50,6 +54,12 @@
         // guessed, so the rail always ends flush with its last card.
         it.to = Math.max(0, it.el.scrollWidth - window.innerWidth +
                             parseFloat(getComputedStyle(it.el).paddingLeft || 0));
+        // And the section is exactly one viewport plus that travel. A fixed
+        // 420vh meant the strip finished moving 40% of the way through and
+        // then sat still while the reader kept scrolling past nothing —
+        // which is what made the section feel broken. At this height one
+        // pixel of scroll is one pixel of strip.
+        if (it.pin) it.pin.style.height = (window.innerHeight + it.to) + 'px';
       }
     });
   }
@@ -77,10 +87,10 @@
         p = travel > 0 ? clamp01(-pr.top / travel) : 0;
       } else {
         p = clamp01((it.start - r.top / vh) / (it.start - it.end));
-        // At the very bottom of the document an element can never reach its
-        // end threshold, so it would stay part-faded forever. That is why the
-        // contact buttons looked washed out.
-        if (atBottom) p = 1;
+        // Two more ways to be finished, both belt-and-braces against an
+        // element that cannot scroll far enough to complete on its own:
+        // it is entirely above the fold, or the page has nowhere left to go.
+        if (atBottom || r.bottom < vh) p = 1;
       }
       apply(it, p, r, vh);
     }
@@ -113,6 +123,7 @@
           // Horizontal travel driven by vertical scroll — the rail slides
           // sideways while its sticky parent is held in place.
           t.push('translate3d(' + (-p * it.to) + 'px,0,0)');
+          animateCards(el);
           break;
         case 'counter':
           if (!it.done) {
@@ -126,6 +137,27 @@
       }
     }
     if (t.length) el.style.transform = t.join(' ');
+  }
+
+  /* Each card reacts to where it is across the viewport as the strip travels:
+     it rises and squares up as it reaches the middle, and sinks and tilts
+     away toward either edge. Without this the strip is a slab of cards moving
+     as one lump, which reads as a screenshot being dragged. */
+  function animateCards(track) {
+    var vw = window.innerWidth;
+    var cards = track.children;
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var b = card.getBoundingClientRect();
+      if (b.right < -200 || b.left > vw + 200) continue;   // skip the off-screen
+      var centre = (b.left + b.width / 2) / vw;            // 0 left … 1 right
+      var away = Math.max(-1, Math.min(1, (centre - 0.5) * 2));
+      card.style.transform =
+        'translateY(' + (Math.abs(away) * 22).toFixed(1) + 'px) ' +
+        'rotate(' + (away * 2.6).toFixed(2) + 'deg) ' +
+        'scale(' + (1 - Math.abs(away) * 0.07).toFixed(3) + ')';
+      card.style.opacity = (1 - Math.abs(away) * 0.32).toFixed(3);
+    }
   }
 
   function onScroll() {
@@ -153,7 +185,10 @@
   } else {
     frame();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('resize', function () {
+      collect();          // re-measure travel and re-size the pinned section
+      onScroll();
+    }, { passive: true });
     // Safety net: a document that is hidden never fires scroll, and content
     // parked at opacity 0 would be a blank page. Show everything regardless.
     setTimeout(function () {
@@ -284,73 +319,207 @@
     });
   }
 
-  /* --- assistant ----------------------------------------------------- */
-  var btn = document.querySelector('.assistant__btn');
-  var bubble = document.querySelector('.assistant__bubble');
-  if (btn && bubble) {
-    var lines = [
-      'Ten features, 300 tests, zero analyzer issues. Ask me which one broke first.',
-      'The offline queue lost data to <code>INSERT OR REPLACE</code>. Dispatch M-02 has the receipt.',
-      'Every reconnect used to double the packets. That is a subscription, not a radio.',
-      'A cold Flutter engine costs 780&nbsp;ms. A warmed one costs 40. Dispatch M-04.',
-      'Six of my own colours failed WCAG contrast. I only knew because I computed it.',
-      'Currently shipping to 60M people across 34 app flavours.',
-      'Yes, the whole page is hand-written. No framework, no build step.'
+  /* --- Spinner, the assistant ---------------------------------------- */
+  /* A scripted guide, not a language model. It matches on keywords and
+     answers from the same content the page is built from, so it can never
+     invent a claim about Rushabh that is not already on the page — which is
+     the whole reason to script it rather than wire up an API. */
+  (function () {
+    var openBtn = document.getElementById('chatOpen');
+    var panel = document.getElementById('chat');
+    if (!openBtn || !panel) return;
+
+    var log = document.getElementById('chatLog');
+    var chips = document.getElementById('chatChips');
+    var form = document.getElementById('chatForm');
+    var input = document.getElementById('chatInput');
+    var closeBtn = document.getElementById('chatClose');
+    var bubble = document.querySelector('.assistant__bubble');
+
+    var GREETING =
+      '<p>Hello — I am <strong>Spinner</strong>. 🕷</p>' +
+      '<p>Rushabh built me, and I know this page by heart. Ask me anything ' +
+      'and I will take you straight to it.</p>';
+
+    var TOPICS = [
+      { keys: ['mission', 'work', 'project', 'built', 'portfolio', 'cadence', 'app'],
+        chip: 'The missions',
+        reply: '<p>Five worth opening. <strong>Cadence</strong> is the one you ' +
+               'can run right now — ten production-grade Flutter features in one ' +
+               'codebase, 300 tests, CI green. Then CupidMedia (34 flavours, 60M ' +
+               'members), Highlands Brain, Sergo and Apprintly.</p>' +
+               '<p><a href="#missions" data-go>Take me there →</a> · ' +
+               '<a href="https://rushabhfulkari.github.io/cadence/">Open Cadence ↗</a></p>' },
+
+      { keys: ['skill', 'stack', 'tech', 'power', 'know', 'flutter', 'dart', 'kotlin', 'swift'],
+        chip: 'His skills',
+        reply: '<p>Seven, and they are specific: cross-platform architecture, ' +
+               'native platform work, offline and real-time, monetisation and ' +
+               'compliance, testing that finds things, shipping machinery, and ' +
+               'building with AI.</p>' +
+               '<p>Flutter · Dart · BLoC · Kotlin · Swift · Pigeon · SQLite · BLE · ' +
+               'WebRTC · Bitrise.</p><p><a href="#powers" data-go>See the strip →</a></p>' },
+
+      { keys: ['hire', 'available', 'job', 'role', 'contact', 'email', 'reach', 'talk', 'cv', 'resume'],
+        chip: 'Hire him',
+        reply: '<p>He is open to senior Flutter roles — offline, hardware, or ' +
+               'living inside an app that already exists.</p>' +
+               '<p><a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a> · ' +
+               '<a href="rushabh-fulkari-cv.pdf">CV (PDF) ↗</a> · ' +
+               '<a href="https://www.linkedin.com/in/rushabh-fulkari-b5200b120/">LinkedIn ↗</a></p>' },
+
+      { keys: ['number', 'scale', 'user', 'many', 'metric', 'stat', 'flavour', 'flavor'],
+        reply: '<p><strong>60M+</strong> registered members. <strong>34+</strong> app ' +
+               'flavours from one codebase. <strong>180+</strong> countries, ' +
+               '<strong>43</strong> languages, <strong>1.4M+</strong> installs a month. ' +
+               'Deployment time cut <strong>80%</strong>.</p>' +
+               '<p><a href="#numbers" data-go>The full field report →</a></p>' },
+
+      { keys: ['write', 'blog', 'article', 'dispatch', 'read', 'post'],
+        reply: '<p>Seven dispatches, and they are bugs with receipts rather than ' +
+               '“10 Flutter tips”. The <code>INSERT OR REPLACE</code> cascade that ' +
+               'ate an offline queue. The BLE reconnect that doubles every packet. ' +
+               'What building with an AI actually cost.</p>' +
+               '<p><a href="blog/">Read them all →</a></p>' },
+
+      { keys: ['ai', 'claude', 'llm', 'gpt', 'model'],
+        reply: '<p>He uses Claude daily, and has written down what it is actually ' +
+               'good at. Short version: ask for the seam, not the feature; make it ' +
+               'write the limitation down; and never let a green test suite stand in ' +
+               'for looking at the screen.</p>' +
+               '<p><a href="blog/ten-features-with-claude.html">The long version ↗</a></p>' },
+
+      { keys: ['ble', 'bluetooth', 'offline', 'sync', 'sqlite', 'pigeon', 'add-to-app', 'native'],
+        reply: '<p>All four have their own dispatch — offline-first sync with an ' +
+               'outbox, BLE stream lifecycle, add-to-app over Pigeon, and shipping at ' +
+               '34 flavours.</p><p><a href="blog/">Pick one ↗</a></p>' },
+
+      { keys: ['who', 'about', 'you', 'spinner', 'bot', 'yourself'],
+        reply: '<p>I am scripted — no language model behind me. I match what you ' +
+               'type against the same content this page is built from, so I cannot ' +
+               'make anything up about him. If I do not know, I will say so.</p>' },
+
+      { keys: ['spider', 'web', 'comic', 'design', 'site', 'made'],
+        reply: '<p>The page is hand-written — no framework, no build step. The ' +
+               'halftone, the webs and the lettering are all CSS and inline SVG; ' +
+               'there is not one background image in the stylesheet.</p>' +
+               '<p>Click anywhere, by the way. 🕸</p>' }
     ];
-    var n = 0;
-    btn.addEventListener('click', function () {
-      n = (n + 1) % lines.length;
-      bubble.innerHTML = lines[n];
-      bubble.style.animation = 'none';
-      void bubble.offsetWidth;
-      bubble.style.animation = '';
-    });
-  }
 
-  /* --- loader --------------------------------------------------------- */
-  var loader = document.querySelector('.loader');
-  if (loader) {
-    var fill = loader.querySelector('.loader__fill');
-    var pct = loader.querySelector('.loader__pct');
-    var shown = 0;
-    var started = Date.now();
+    var SURPRISE = [
+      '<p>Six of his own colours failed WCAG contrast. He only knew because he ' +
+      'computed the ratios instead of trusting his eyes.</p>',
+      '<p><code>INSERT OR REPLACE</code> in SQLite is a <em>delete</em> then an ' +
+      'insert — so it fires <code>ON DELETE CASCADE</code> and quietly ate every ' +
+      'queued change. That one is in dispatch M-02.</p>',
+      '<p>A cold Flutter engine costs about <strong>780ms</strong>. A pre-warmed ' +
+      'one costs <strong>40</strong>. That difference is the whole reputation of ' +
+      'embedded Flutter.</p>',
+      '<p>He once spent four hours on a test suite that would not run. It was not ' +
+      'the code — he had exhausted the machine\'s 16,384 ephemeral ports.</p>',
+      '<p>RR intervals in a heart-rate packet are in units of 1/1024 s, not ' +
+      'milliseconds. Read them as ms and every HRV number you ship is 2.4% wrong.</p>'
+    ];
 
-    // Real progress where the browser gives it to us — images decoded — and a
-    // floor so the bar always moves. A loader that sits at 0% then jumps to
-    // 100% reads as broken rather than fast.
-    var imgs = [].slice.call(document.images);
-    var loaded = 0;
-    imgs.forEach(function (im) {
-      if (im.complete) { loaded++; return; }
-      im.addEventListener('load', function () { loaded++; }, { once: true });
-      im.addEventListener('error', function () { loaded++; }, { once: true });
-    });
+    var FALLBACK =
+      '<p>I do not know that one — I am scripted, so I would rather say so than ' +
+      'guess.</p><p>Try <strong>missions</strong>, <strong>skills</strong>, ' +
+      '<strong>numbers</strong>, <strong>writing</strong>, or ' +
+      '<strong>hire him</strong>.</p>';
 
-    (function tick() {
-      var byImage = imgs.length ? loaded / imgs.length : 1;
-      var byTime = Math.min(1, (Date.now() - started) / 1100);
-      var target = Math.round(Math.min(byImage, byTime) * 100);
-      shown += (target - shown) * 0.25;
-      var v = Math.round(shown);
-      if (fill) fill.style.width = v + '%';
-      if (pct) pct.textContent = v + '%';
-      if (v >= 99) return finish();
-      requestAnimationFrame(tick);
-    })();
+    var started = false;
+    var surpriseAt = 0;
 
-    function finish() {
-      if (fill) fill.style.width = '100%';
-      if (pct) pct.textContent = '100%';
-      setTimeout(function () {
-        loader.classList.add('is-done');
-        // Taken out of the tree once the panels have parted, so it can never
-        // sit invisibly over the page swallowing anything.
-        setTimeout(function () { loader.remove(); }, 950);
-      }, reduced ? 0 : 240);
+    function scrollDown() { log.scrollTop = log.scrollHeight; }
+
+    function say(html, who) {
+      var el = document.createElement('div');
+      el.className = 'msg msg--' + (who || 'bot');
+      el.innerHTML = html;
+      log.appendChild(el);
+      scrollDown();
+      return el;
     }
-    // Belt and braces on top of the CSS bail-out.
-    setTimeout(finish, 4000);
-  }
+
+    function think(then) {
+      var el = document.createElement('div');
+      el.className = 'msg msg--think';
+      el.innerHTML = 'Thinking <i></i><i></i><i></i>';
+      log.appendChild(el);
+      scrollDown();
+      // Long enough to read as considered, short enough not to be annoying.
+      setTimeout(function () { el.remove(); then(); }, 420 + Math.random() * 260);
+    }
+
+    function answer(text) {
+      var q = text.toLowerCase();
+      if (/surprise|random|fact|tell me something/.test(q)) {
+        var pick = SURPRISE[surpriseAt % SURPRISE.length];
+        surpriseAt++;
+        return pick;
+      }
+      var best = null, bestScore = 0;
+      TOPICS.forEach(function (topic) {
+        var score = 0;
+        topic.keys.forEach(function (k) { if (q.indexOf(k) > -1) score++; });
+        if (score > bestScore) { bestScore = score; best = topic; }
+      });
+      return best ? best.reply : FALLBACK;
+    }
+
+    function ask(text) {
+      say(text.replace(/[<>]/g, ''), 'you');
+      think(function () { say(answer(text)); });
+    }
+
+    function buildChips() {
+      chips.innerHTML = '';
+      ['The missions', 'His skills', 'Hire him', 'Surprise me'].forEach(function (label) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.addEventListener('click', function () { ask(label); });
+        chips.appendChild(b);
+      });
+    }
+
+    function open() {
+      panel.hidden = false;
+      if (!started) { started = true; say(GREETING); buildChips(); }
+      setTimeout(function () { input.focus(); }, 60);
+    }
+    function close() { panel.hidden = true; openBtn.focus(); }
+
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) close();
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      ask(text);
+    });
+
+    // In-page links close the panel and jump, rather than scrolling the page
+    // behind a window that is covering it.
+    log.addEventListener('click', function (e) {
+      var link = e.target.closest('a[data-go]');
+      if (!link) return;
+      e.preventDefault();
+      close();
+      var target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    if (bubble) {
+      bubble.addEventListener('click', open);
+      bubble.style.cursor = 'pointer';
+    }
+  }());
 
   /* --- corner menu ---------------------------------------------------- */
   var navBtn = document.querySelector('.corner-nav__btn');

@@ -18,7 +18,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/comic.css">
 </head>
-<body>
+<body id="top">
+<header class="topbar">
+  <a class="topbar__logo" href="#top">
+    <svg width="22" height="18" viewBox="0 0 86 66" fill="none" aria-hidden="true">
+      <g stroke="#D42A3C" stroke-width="6" stroke-linecap="round">
+        <path d="M34 26C24 18 16 12 4 16"/><path d="M34 34C22 32 13 32 3 39"/>
+        <path d="M52 26C62 18 70 12 82 16"/><path d="M52 34C64 32 73 32 83 39"/>
+        <path d="M34 40C24 46 17 50 10 58"/><path d="M52 40C62 46 69 50 76 58"/>
+      </g>
+      <ellipse cx="43" cy="26" rx="10" ry="8" fill="#D42A3C"/>
+      <ellipse cx="43" cy="42" rx="14" ry="16" fill="#D42A3C"/>
+    </svg>
+    R.Fulkari
+  </a>
+  <span class="topbar__spacer"></span>
+  <nav class="topbar__links" aria-label="Sections">
+    <a href="#powers">Powers</a>
+    <a href="#missions">Missions</a>
+    <a href="#origin">Origin</a>
+    <a href="#numbers">Numbers</a>
+    <a href="#dispatches">Dispatches</a>
+  </nav>
+  <a class="topbar__cta" href="#contact">Hire me</a>
+</header>
+
 <div class="corner-id">
   <span class="stamp stamp--red">Senior</span>
   <span class="stamp">Flutter Developer</span>
@@ -112,9 +136,9 @@
     <div class="hero__grid">
       <div>
         <p class="hero__tag" data-fx="rise">
-          Senior Flutter developer. I ship <b>34 app flavours from one
-          codebase</b> to 60&nbsp;million people in 180 countries — and I write
-          down what broke on the way.
+          <span class="script">Friendly neighbourhood</span> Flutter developer.
+          I ship <b>34 app flavours from one codebase</b> to 60&nbsp;million
+          people in 180 countries — and I write down what broke on the way.
         </p>
 
         <div class="hero__cta" data-fx="rise">
@@ -157,7 +181,7 @@
 
 
 <!-- ══════════════ POWERS ══════════════ -->
-<section id="powers" class="pin" style="height:420vh">
+<section id="powers" class="pin">
   <span class="web web--bl" aria-hidden="true"></span>
   <span class="speedlines" aria-hidden="true"></span>
   <div class="pin__stage">
@@ -319,6 +343,19 @@
   </div>
 </section>
 
+
+<!-- ══════════════ THE RULE ══════════════ -->
+<section id="rule">
+  <span class="speedlines" aria-hidden="true"></span>
+  <div class="wrap rule">
+    <p class="rule__eyebrow" data-fx="rise">— the only rule —</p>
+    <p class="rule__line" data-fx="rise scale" data-from=".92" data-to="1" data-start=".95" data-end=".45">
+      Ship it, then <em>write down</em><br>what <em>broke</em>
+    </p>
+    <p class="rule__attrib" data-fx="rise">— every senior engineer, eventually</p>
+  </div>
+</section>
+
 <!-- ══════════════ ORIGIN ══════════════ -->
 <section class="origin" id="origin">
   <span class="web web--tr" aria-hidden="true"></span>
@@ -411,12 +448,14 @@
 </section>
 
 <!-- ══════════════ CONTACT ══════════════ -->
-<section class="contact" id="contact">
-  <span class="web web--tl" aria-hidden="true"></span>
-  <span class="web web--br" aria-hidden="true"></span>
+<section class="contact section--dark" id="contact">
+  <span class="webfield" aria-hidden="true"></span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">— last page —</p>
-    <h2 class="display display--tone contact__big" data-fx="rise scale" data-from=".9" data-to="1" data-start=".95" data-end=".45"><span data-text="Let&#8217;s">Let&#8217;s</span><span data-text="team up">team up</span></h2>
+    <p class="script" data-fx="rise" style="font-size:clamp(16px,2vw,26px)">Got something worth building?</p>
+    <h2 class="display contact__big" data-fx="rise scale" data-from=".92" data-to="1" data-start=".95" data-end=".45">
+      <span>Let&#8217;s</span><span class="display--outline">team up</span>
+    </h2>
     <p class="section-sub" data-fx="rise" style="margin-top:26px">
       Open to senior Flutter roles. If you are building
       something that has to work offline, talk to hardware, or live inside an app
@@ -438,18 +477,37 @@
       B.Tech, NIT Karnataka · <a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a>
     </p>
     <p style="margin:0">
-      © <span data-year>2026</span> · Hand-written — no framework, no build step for the page you are on.
-      Illustrations are <a href="https://www.openpeeps.com/">Open Peeps</a> by Pablo Stanley, CC0.
+      © <span data-year>2026</span> · Rushabh Fulkari
     </p>
   </div>
 </footer>
 
 <div class="assistant">
-  <div class="assistant__bubble">Hello. I am the field assistant. Tap me for a war story.</div>
-  <button class="assistant__btn" type="button" aria-label="Next war story">
+  <div class="assistant__bubble">Hello. I am Spinner. Tap me and ask about the work.</div>
+  <button class="assistant__btn" type="button" id="chatOpen" aria-label="Open Spinner, the assistant">
     <img src="art/tomas.png" alt="">
   </button>
 </div>
+
+<section class="chat" id="chat" hidden aria-label="Spinner, the assistant">
+  <header class="chat__bar">
+    <div class="chat__id">
+      <p class="chat__name">Spinner</p>
+      <p class="chat__role">Rushabh&rsquo;s assistant</p>
+    </div>
+    <button class="chat__close" type="button" id="chatClose" aria-label="Close">&times;</button>
+  </header>
+
+  <div class="chat__log" id="chatLog" role="log" aria-live="polite"></div>
+
+  <div class="chat__chips" id="chatChips"></div>
+
+  <form class="chat__form" id="chatForm">
+    <input class="chat__input" id="chatInput" type="text" autocomplete="off"
+           placeholder="ask me anything&hellip;" aria-label="Ask Spinner a question">
+    <button class="chat__send" type="submit" aria-label="Send">&#10148;</button>
+  </form>
+</section>
 
 <script src="assets/comic.js"></script>
 <script src="assets/posts.js"></script>
