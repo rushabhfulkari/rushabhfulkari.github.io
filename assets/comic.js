@@ -3,7 +3,7 @@
    from it. Everything animated is declared in the markup with data-attributes,
    so adding motion to an element never means touching this file.
 
-     data-fx="rise|slide|rotate|scale|counter|pin-x"
+     data-fx="rise|slide|drift|rotate|scale|counter"
      data-from / data-to   numeric range, mapped across the element's pass
      data-start / data-end viewport fractions the pass runs between
 
@@ -39,8 +39,7 @@
         // obviously — could never scroll high enough to finish, and stayed
         // part-faded forever.
         end: num(el, 'data-end', 0.62),
-        done: false,
-        pin: el.closest ? el.closest('.pin') : null
+        done: false
       };
     });
 
@@ -49,18 +48,6 @@
     // visible instead of being a blank sheet of cream.
     items.forEach(function (it) {
       if (it.fx.indexOf('rise') > -1) it.el.style.opacity = '0';
-      if (it.fx.indexOf('pin-x') > -1 && it.el.hasAttribute('data-pin-auto')) {
-        // Travel is content width minus viewport, measured rather than
-        // guessed, so the rail always ends flush with its last card.
-        it.to = Math.max(0, it.el.scrollWidth - window.innerWidth +
-                            parseFloat(getComputedStyle(it.el).paddingLeft || 0));
-        // And the section is exactly one viewport plus that travel. A fixed
-        // 420vh meant the strip finished moving 40% of the way through and
-        // then sat still while the reader kept scrolling past nothing —
-        // which is what made the section feel broken. At this height one
-        // pixel of scroll is one pixel of strip.
-        if (it.pin) it.pin.style.height = (window.innerHeight + it.to) + 'px';
-      }
     });
   }
 
@@ -75,23 +62,11 @@
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
       var r = it.el.getBoundingClientRect();
-      var p;
-
-      if (it.pin) {
-        // A sticky element's own rect barely moves, so measuring the track
-        // gives a progress that never advances — which is exactly why the
-        // strip sat still. Progress comes from the tall .pin ancestor
-        // scrolling past instead.
-        var pr = it.pin.getBoundingClientRect();
-        var travel = it.pin.offsetHeight - vh;
-        p = travel > 0 ? clamp01(-pr.top / travel) : 0;
-      } else {
-        p = clamp01((it.start - r.top / vh) / (it.start - it.end));
-        // Two more ways to be finished, both belt-and-braces against an
-        // element that cannot scroll far enough to complete on its own:
-        // it is entirely above the fold, or the page has nowhere left to go.
-        if (atBottom || r.bottom < vh) p = 1;
-      }
+      var p = clamp01((it.start - r.top / vh) / (it.start - it.end));
+      // Two more ways to be finished, both belt-and-braces against an element
+      // that cannot scroll far enough to complete on its own: it is entirely
+      // above the fold, or the page has nowhere left to go.
+      if (atBottom || r.bottom < vh) p = 1;
       apply(it, p, r, vh);
     }
   }
@@ -119,12 +94,6 @@
         case 'scale':
           t.push('scale(' + (it.from + (it.to - it.from) * e) + ')');
           break;
-        case 'pin-x':
-          // Horizontal travel driven by vertical scroll — the rail slides
-          // sideways while its sticky parent is held in place.
-          t.push('translate3d(' + (-p * it.to) + 'px,0,0)');
-          animateCards(el);
-          break;
         case 'counter':
           if (!it.done) {
             var target = it.to;
@@ -137,27 +106,6 @@
       }
     }
     if (t.length) el.style.transform = t.join(' ');
-  }
-
-  /* Each card reacts to where it is across the viewport as the strip travels:
-     it rises and squares up as it reaches the middle, and sinks and tilts
-     away toward either edge. Without this the strip is a slab of cards moving
-     as one lump, which reads as a screenshot being dragged. */
-  function animateCards(track) {
-    var vw = window.innerWidth;
-    var cards = track.children;
-    for (var i = 0; i < cards.length; i++) {
-      var card = cards[i];
-      var b = card.getBoundingClientRect();
-      if (b.right < -200 || b.left > vw + 200) continue;   // skip the off-screen
-      var centre = (b.left + b.width / 2) / vw;            // 0 left … 1 right
-      var away = Math.max(-1, Math.min(1, (centre - 0.5) * 2));
-      card.style.transform =
-        'translateY(' + (Math.abs(away) * 22).toFixed(1) + 'px) ' +
-        'rotate(' + (away * 2.6).toFixed(2) + 'deg) ' +
-        'scale(' + (1 - Math.abs(away) * 0.07).toFixed(3) + ')';
-      card.style.opacity = (1 - Math.abs(away) * 0.32).toFixed(3);
-    }
   }
 
   function onScroll() {
@@ -302,22 +250,6 @@
   [].forEach.call(document.querySelectorAll('.marquee__track'), function (track) {
     track.innerHTML = track.innerHTML + track.innerHTML;
   });
-
-  /* --- rail: drag to scroll ------------------------------------------ */
-  var rail = document.querySelector('.rail');
-  if (rail) {
-    var down = false, startX = 0, startLeft = 0;
-    rail.addEventListener('pointerdown', function (e) {
-      down = true; startX = e.clientX; startLeft = rail.scrollLeft;
-      rail.setPointerCapture(e.pointerId); rail.style.cursor = 'grabbing';
-    });
-    rail.addEventListener('pointermove', function (e) {
-      if (down) rail.scrollLeft = startLeft - (e.clientX - startX);
-    });
-    ['pointerup', 'pointercancel'].forEach(function (ev) {
-      rail.addEventListener(ev, function () { down = false; rail.style.cursor = ''; });
-    });
-  }
 
   /* --- Spinner, the assistant ---------------------------------------- */
   /* A scripted guide, not a language model. It matches on keywords and

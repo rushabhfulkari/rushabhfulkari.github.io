@@ -263,25 +263,19 @@ h2.section-title {
 /* ============================================================
    POWERS — horizontal scroller
    ============================================================ */
-.rail {
-  display: flex; gap: 20px; overflow-x: auto; padding: 6px 4px 26px;
-  scroll-snap-type: x mandatory; scrollbar-width: thin;
+.powers__grid {
+  display: grid; gap: clamp(16px, 2vw, 24px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  margin-top: clamp(24px, 4vh, 44px);
 }
-.rail::-webkit-scrollbar { height: 8px; }
-.rail::-webkit-scrollbar-thumb { background: var(--ink); }
-.rail::-webkit-scrollbar-track { background: var(--paper-deep); }
 .power {
-  flex: 0 0 clamp(230px, 68vw, 300px); scroll-snap-align: start;
   background: var(--paper); border: var(--panel-border);
   box-shadow: var(--shadow-hard); padding: 22px;
   display: flex; flex-direction: column; gap: 10px;
   transition: transform .2s cubic-bezier(.34,1.56,.64,1);
 }
-/* No hover transform: the strip drives each card's transform on every frame,
-   so a hover rule here would be overwritten mid-gesture and flicker. The
-   shadow carries the hover instead. */
-.power { transition: box-shadow .18s ease; will-change: transform, opacity; }
-.power:hover { box-shadow: 11px 11px 0 var(--ink); }
+.power { transition: box-shadow .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1); }
+.power:hover { box-shadow: 11px 11px 0 var(--ink); transform: translate(-3px,-3px); }
 .power__no { font-family: var(--display); font-size: 30px; color: var(--red); line-height: 1; }
 .power h3 { font-family: var(--display); text-transform: uppercase; font-size: 19px; margin: 0; line-height: 1.05; }
 .power p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
@@ -524,7 +518,7 @@ section, .hero { position: relative; overflow: hidden; }
 .stat { padding: 26px 20px; }
 .stat__n { font-size: clamp(28px, 3.4vw, 50px); letter-spacing: -.02em; }
 .stat__l { margin-top: 10px; line-height: 1.45; }
-.power { flex: 0 0 clamp(250px, 30vw, 340px); }
+
 
 /* Dispatches: give the title room to breathe at full width. */
 .dispatch { grid-template-columns: 74px 1fr auto; gap: 26px; padding: 26px 0; }
@@ -533,35 +527,6 @@ section, .hero { position: relative; overflow: hidden; }
 
 @media (max-width: 620px) {
   .dispatch { grid-template-columns: 48px 1fr; gap: 16px; }
-}
-
-/* ============================================================
-   PINNED HORIZONTAL SECTION
-   The stage is held while the track slides sideways, so vertical
-   scrolling reads as travelling across a comic strip.
-   ============================================================ */
-.pin { position: relative; }
-.pin__stage {
-  position: sticky; top: 0; height: 100svh;
-  display: flex; flex-direction: column; justify-content: center;
-  overflow: hidden;
-}
-.pin__head { padding: 0 var(--gutter) 26px; }
-.pin__track {
-  display: flex; gap: clamp(16px, 2.4vw, 30px);
-  padding-inline: var(--gutter); width: max-content;
-  will-change: transform;
-}
-@media (max-width: 860px) {
-  /* Below tablet the sticky trick fights the address bar, so it degrades to
-     an ordinary horizontal scroller with snap points. */
-  .pin { height: auto !important; }
-  .pin__stage { position: static; height: auto; padding: 0; }
-  .pin__track {
-    width: auto; overflow-x: auto; scroll-snap-type: x mandatory;
-    padding-bottom: 22px; transform: none !important;
-  }
-  .pin__track > * { scroll-snap-align: start; }
 }
 
 /* ============================================================
@@ -779,9 +744,6 @@ section, .hero { position: relative; overflow: hidden; }
 /* ============================================================
    POWERS — close the dead space
    ============================================================ */
-.pin__stage { justify-content: flex-start; padding-top: clamp(70px, 12vh, 130px); }
-.pin__head { padding-bottom: clamp(16px, 2.4vh, 30px); }
-.pin__head .section-title { margin-bottom: 4px; }
 
 /* ============================================================
    CONTACT — the buttons were washing out mid-animation
@@ -1030,3 +992,31 @@ section, .hero { position: relative; overflow: hidden; }
   letter-spacing: -.025em; margin: 18px 0;
 }
 .rule__line em { font-style: normal; color: var(--red); }
+
+/* ============================================================
+   CHAT — layout that survives a short viewport
+   ============================================================ */
+/* The log was collapsing to a single line on a phone: four chips stacked
+   four-high, plus the header and the composer, left it about 70px. The chips
+   are now one scrolling row, and the log has a floor it cannot go under. */
+.chat__log { min-height: 140px; }
+
+.chat__chips {
+  flex-wrap: nowrap; overflow-x: auto; gap: 8px;
+  padding: 10px 14px; scrollbar-width: none;
+  border-top: 2px solid rgba(20, 17, 13, .12);
+}
+.chat__chips::-webkit-scrollbar { display: none; }
+.chat__chips button { white-space: nowrap; flex: none; }
+
+@media (max-height: 720px), (max-width: 460px) {
+  /* Full-bleed on anything small: a floating panel on a phone wastes the
+     edges it cannot use anyway. */
+  .chat {
+    right: 8px; left: 8px; bottom: 8px; top: 8px;
+    width: auto; height: auto;
+  }
+  .chat__name { font-size: 22px; }
+  .chat__bar { padding: 10px 12px; }
+  .chat__form { padding: 10px 12px; }
+}
