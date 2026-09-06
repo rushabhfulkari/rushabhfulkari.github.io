@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/comic.css?v=20260906103423">
+<link rel="stylesheet" href="assets/comic.css?v=20260906104737">
 </head>
 <body id="top">
 <header class="topbar">
@@ -156,8 +156,8 @@
         </div>
         <div class="hero__card" data-fx="rise" style="transform:rotate(-1.1deg)">
           <h4>Open to</h4>
-          <p>Senior Flutter roles. Offline, hardware, or living inside an app
-             that already exists — that is the part I like.</p>
+          <p>Senior Flutter roles. Offline-first, multi-flavour scale, and the
+             monetisation and compliance work that comes with real users.</p>
         </div>
         <div class="hero__card" data-fx="rise" style="transform:rotate(.5deg)">
           <h4>Latest</h4>
@@ -172,7 +172,7 @@
 <div class="marquee">
   <div class="marquee__track">
     <span>Flutter ✦</span><span>Dart ✦</span><span>BLoC ✦</span><span>Platform channels ✦</span>
-    <span>Offline-first ✦</span><span>BLE ✦</span><span>Add-to-app ✦</span><span>Pigeon ✦</span>
+    <span>Offline-first ✦</span><span>Ad monetisation ✦</span><span>Multi-flavour CI ✦</span><span>Age compliance ✦</span>
     <span>Kotlin ✦</span><span>Swift ✦</span><span>CI/CD ✦</span><span>Shipping non-stop 🕷</span>
   </div>
 </div>
@@ -203,21 +203,21 @@
       <article class="power" data-fx="rise scale" data-from=".95" data-to="1">
         <p class="power__no">02</p>
         <h3>Native<br>platform work</h3>
-        <p>Platform channels, native ad factories on both platforms, Flutter embedded in Kotlin and Swift hosts over Pigeon with a cached engine.</p>
-        <p class="power__tags">Kotlin · Swift · Pigeon · Add-to-app</p>
+        <p>Platform channels, and native ad factories and platform views written on both iOS and Android — one Dart codebase, two native stacks, neither of them special-cased.</p>
+        <p class="power__tags">Kotlin · Swift · Platform channels · Native views</p>
       </article>
 
       <article class="power" data-fx="rise scale" data-from=".95" data-to="1">
         <p class="power__no">03</p>
         <h3>Offline &amp;<br>real-time</h3>
-        <p>Outbox queues with backoff and a written conflict rule. VoIP and WebRTC calling. BLE GATT with stream lifecycle and bounded reconnection.</p>
-        <p class="power__tags">SQLite · WebRTC · BLE · WebSockets</p>
+        <p>Outbox queues with backoff and a written conflict rule. VoIP and WebRTC calling that survives a network drop, with call state persisted and recovered across the app lifecycle.</p>
+        <p class="power__tags">SQLite · WebRTC · WebSockets · Hive</p>
       </article>
 
       <article class="power" data-fx="rise scale" data-from=".95" data-to="1">
         <p class="power__no">04</p>
         <h3>Monetisation<br>&amp; compliance</h3>
-        <p>Ad platform built from zero — seven mediation networks, remote-configurable placements. Age verification across four jurisdictions, GDPR, ATT.</p>
+        <p>Ad platform built from zero — seven mediation networks, remote-configurable placements, and session-aware prefetch that ended empty slots. Age verification behind a fail-open plugin across four jurisdictions.</p>
         <p class="power__tags">AdMob · CMP SDK · Akamai BMP · GDPR</p>
       </article>
 
@@ -269,18 +269,18 @@
         <p>
           A Flutter reference app built to be read as much as run. Ten
           production-grade features in one codebase, each with the trade-off it
-          makes written down beside the working code — offline-first sync, BLE
-          GATT, an LLM agent loop, server-driven UI, a WCAG AA audit, and one
-          screen embedded in native Kotlin and Swift hosts over Pigeon.
+          makes written down beside the working code — offline-first sync over
+          SQLite with an outbox queue and a documented conflict rule, an LLM
+          agent loop with typed tool schemas, server-driven UI on a versioned
+          schema, and a WCAG AA audit with computed contrast ratios.
         </p>
         <div class="chips">
           <span class="chip chip--red">Live demo</span>
-          <span class="chip chip--lime">300 tests</span>
           <span class="chip">Zero analyzer issues</span>
           <span class="chip">CI green</span>
           <span class="chip chip--blue">Source on GitHub</span>
         </div>
-        <p class="mission__tags">Flutter · Kotlin · Swift · Pigeon · SQLite · BLE</p>
+        <p class="mission__tags">Flutter · Dart · BLoC · SQLite · CI</p>
       </a>
 
       <div class="mission" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5">
@@ -290,9 +290,11 @@
         </div>
         <p>
           34 app flavours, one codebase, 60M members. Built the ad monetisation
-          platform from zero — banner, interstitial and native formats, native ad
-          factories on both platforms, seven mediation networks, all of it
-          remote-configurable so experiments ship without a release.
+          platform from zero — banner, interstitial and native formats, seven
+          mediation networks, all of it remote-configurable so experiments ship
+          without a release. Extended Akamai bot protection from three endpoints
+          to the whole account surface, and cut sign-in crash noise by 40% moving
+          to Google Sign-In v7 with Credential Manager.
         </p>
         <div class="chips">
           <a class="chip" href="https://www.afrointroductions.com/">AfroIntroductions</a>
@@ -372,13 +374,15 @@
   <span class="fx" style="top:8%;right:6%" aria-hidden="true">THWIP!</span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">Page 1 — origin story</p>
-    <h2 class="section-title" data-fx="rise drift" data-to="-26">An ordinary<br>codebase…</h2>
+    <h2 class="section-title" data-fx="rise drift" data-to="-26">One codebase.<br>Thirty-four apps.</h2>
     <p class="section-sub" data-fx="rise">
-      …until you multiply it by thirty-four. The lesson took four companies to
-      learn: at one app a hardcoded value is a shortcut you regret mildly; at
-      thirty-four it is a store review, a staged rollout and a week of waiting.
-      Scale does not break your architecture — it stops letting you get away
-      with not having one.
+      Thirty-four flavours, 43 languages, 180 countries — all out of one Dart
+      codebase. At that size a shortcut stops being a shortcut: a hardcoded
+      string is a store review in four jurisdictions, and a bad default reaches
+      60 million people before a fix can ship. So the job stops being “make it
+      work” and becomes “make changing it cheap” — remote config instead of
+      releases, flavour-aware CI instead of manual builds, and a written reason
+      behind every trade-off.
     </p>
 
     <div class="origin__grid">
@@ -417,10 +421,9 @@
   <div class="wrap">
     <p class="kicker" data-fx="rise">— meanwhile, in the standup —</p>
     <div class="strip__panels" data-fx="rise">
-        <figure class="panel"><img src="art/mira.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">We need this in thirty-four markets.</figcaption></figure>
+        <figure class="panel"><img src="art/mira.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">We need this in 3 days.</figcaption></figure>
         <figure class="panel"><img src="art/kwame.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">By Thursday.</figcaption></figure>
         <figure class="panel"><img src="art/lena.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">One codebase. It already is.</figcaption></figure>
-        <figure class="panel"><img src="art/omar.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">Three hundred tests. Still green.</figcaption></figure>
     </div>
   </div>
 </section>
@@ -444,8 +447,6 @@
       <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
       <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
       <div class="stat"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="7" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Ad mediation networks</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="4" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Compliance jurisdictions</p></div>
     </div>
   </div>
 </section>
@@ -474,8 +475,8 @@
     </h2>
     <p class="section-sub" data-fx="rise" style="margin-top:26px">
       Open to senior Flutter roles. If you are building
-      something that has to work offline, talk to hardware, or live inside an app
-      that already exists — that is the part I like.
+      something that has to work offline, ship to a lot of people at once, or
+      survive a store review — that is the part I like.
     </p>
     <div class="contact__links" data-fx="rise">
       <a class="btn" href="mailto:rushabhfulkari@gmail.com">Email me</a>
@@ -525,6 +526,6 @@
   </form>
 </section>
 
-<script src="assets/comic.js?v=20260906103423"></script>
+<script src="assets/comic.js?v=20260906104737"></script>
 </body>
 </html>

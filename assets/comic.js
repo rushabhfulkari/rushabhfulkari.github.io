@@ -255,13 +255,13 @@
                'native platform work, offline and real-time, monetisation and ' +
                'compliance, testing that finds things, shipping machinery, and ' +
                'building with AI.</p>' +
-               '<p>Flutter · Dart · BLoC · Kotlin · Swift · Pigeon · SQLite · BLE · ' +
+               '<p>Flutter · Dart · BLoC · Kotlin · Swift · SQLite · AdMob · ' +
                'WebRTC · Bitrise.</p><p><a href="#powers" data-go>See the strip →</a></p>' },
 
       { keys: ['hire', 'available', 'job', 'role', 'contact', 'email', 'reach', 'talk', 'cv', 'resume'],
         chip: 'Hire him',
-        reply: '<p>He is open to senior Flutter roles — offline, hardware, or ' +
-               'living inside an app that already exists.</p>' +
+        reply: '<p>He is open to senior Flutter roles — offline-first, scale, or ' +
+               'the monetisation and compliance work that comes with real users.</p>' +
                '<p><a href="mailto:rushabhfulkari@gmail.com">rushabhfulkari@gmail.com</a> · ' +
                '<a href="rushabh-fulkari-cv.pdf">CV (PDF) ↗</a> · ' +
                '<a href="https://www.linkedin.com/in/rushabh-fulkari-b5200b120/">LinkedIn ↗</a></p>' },
@@ -285,10 +285,11 @@
                'write the limitation down; and never let a green test suite stand in ' +
                'for looking at the screen.</p>' },
 
-      { keys: ['ble', 'bluetooth', 'offline', 'sync', 'sqlite', 'pigeon', 'add-to-app', 'native'],
-        reply: '<p>All four have their own dispatch — offline-first sync with an ' +
-               'outbox, BLE stream lifecycle, add-to-app over Pigeon, and shipping ' +
-               'at 34 flavours.</p>' +
+      { keys: ['offline', 'sync', 'sqlite', 'native', 'ads', 'admob', 'monetisation', 'compliance'],
+        reply: '<p>Offline-first sync over an outbox queue, native ad factories on ' +
+               'both platforms, seven mediation networks wired remote-configurable, ' +
+               'and age verification across four jurisdictions — all of it at 34 ' +
+               'flavours.</p>' +
                '<p><a href="#missions" data-go>Pick one →</a></p>' },
 
       { keys: ['who', 'about', 'you', 'spinner', 'bot', 'yourself'],
