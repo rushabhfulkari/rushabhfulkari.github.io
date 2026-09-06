@@ -1116,17 +1116,3 @@ section, .hero { position: relative; overflow: hidden; }
 .figure--bolts    { top: 12%;      left: 4%;   width: clamp(90px, 11vw, 165px);  color: var(--red); opacity: .3; }
 .figure--strip { top: 0; right: 7%; width: clamp(80px, 10vw, 140px); color: var(--ink); opacity: .16; transform-origin: 50% 0; }
 @media (max-width: 780px) { .figure--origin, .figure--shooter, .figure--bolts { display: none; } }
-
-/* ============================================================
-   RELIC — a real Golden Age panel, public domain, duotoned to
-   the palette so it sits with the page rather than fighting it.
-   It rides in the strip as a fourth panel: absolutely positioned
-   in that section it simply overflowed, the section being only
-   as tall as one row of panels.
-   Credited below: PD needs no attribution, but saying where a
-   thing came from costs nothing.
-   ============================================================ */
-.panel--relic img { width: auto; height: 132px; object-fit: contain;
-  border: 2.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
-.panel__credit { margin: 9px 0 0; text-align: center; font-size: 8.5px;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); }
