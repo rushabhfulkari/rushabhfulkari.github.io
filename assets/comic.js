@@ -153,12 +153,27 @@
   var spider = document.querySelector('.spider');
   if (spider) {
     var hero = document.querySelector('.hero');
+    var thread = spider.querySelector('.spider__thread');
+    var body = spider.querySelector('.spider__body');
+    var heroName = document.querySelector('.hero__name');
+
     var placeSpider = function () {
       // Further right on a narrow screen: at 62% the thread hangs straight
       // through the name, which the red band made obvious.
       var frac = window.innerWidth < 760 ? 0.87 : 0.62;
       spider.style.transform =
         'translate3d(' + (window.innerWidth * frac - 43) + 'px,0,0)';
+
+      // Around tablet width the name runs nearly the full width, so no
+      // horizontal position clears it. Shorten the thread instead and let the
+      // spider hang in the space above the name rather than across it.
+      if (thread && heroName) {
+        thread.style.height = '';                       // read the CSS length back
+        var full = parseFloat(getComputedStyle(thread).height) || 200;
+        var bodyH = body ? body.getBoundingClientRect().height : 46;
+        var room = heroName.getBoundingClientRect().top + window.scrollY - bodyH - 16;
+        thread.style.height = Math.max(70, Math.min(full, room)) + 'px';
+      }
       var fade = 1;
       if (hero) {
         fade = clamp01(hero.getBoundingClientRect().bottom / (window.innerHeight * 0.55));
