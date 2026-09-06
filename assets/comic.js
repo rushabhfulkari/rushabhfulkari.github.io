@@ -494,7 +494,11 @@
     var lThread = loader.querySelector('.loader__thread');
     var lBug    = loader.querySelector('.loader__bug');
     var lWeb    = loader.querySelector('.loader__web');
-    var shown = 0, started = Date.now(), done = false, DEADLINE = 1800;
+    var shown = 0, started = Date.now(), done = false;
+    // MIN_MS is a floor on how fast the bar may move, so the web always gets
+    // spun where someone can see it. DEADLINE is when we stop waiting on
+    // assets and finish anyway.
+    var MIN_MS = 1800, DEADLINE = 3000;
 
     /* Build the web: eight spokes and five rings, each path measured so its
        dash offset can be driven straight from progress. */
@@ -543,8 +547,17 @@
     }
     measure();
     window.addEventListener('resize', measure, { passive: true });
+    // The caption is set in a web font, so the block it sits in changes height
+    // when that font arrives — which moves the point the spider is aiming at.
+    if (document.fonts) { document.fonts.ready.then(measure); }
 
-    var imgs = [].slice.call(document.images), loaded = 0;
+    // Only images that actually load now count as a readiness signal. Lazy
+    // ones below the fold never load while the loader is covering the page,
+    // so waiting on them meant this always fell through to the deadline.
+    var imgs = [].slice.call(document.images).filter(function (im) {
+      return im.loading !== 'lazy';
+    });
+    var loaded = 0;
     imgs.forEach(function (im) {
       if (im.complete) { loaded++; return; }
       im.addEventListener('load',  function () { loaded++; }, { once: true });
@@ -584,13 +597,16 @@
         var elapsed = Date.now() - started;
         var imagesDone = !imgs.length || loaded >= imgs.length;
         var ready = (imagesDone && fontsReady) || elapsed > DEADLINE;
-        var target = ready ? 100 : Math.min(92, (elapsed / DEADLINE) * 92);
+        // Even when everything is already cached, the bar cannot outrun this
+        // pace — so a warm reload still shows the animation instead of a flash.
+        var pace = Math.min(1, elapsed / MIN_MS);
+        var target = (ready ? 100 : 92) * pace;
         shown += (target - shown) * 0.25;
         if (paint(shown / 100) >= 99) { finish(); return; }
         requestAnimationFrame(tick);
       }());
       // Belt and braces on top of the CSS bail-out.
-      setTimeout(finish, 4000);
+      setTimeout(finish, 5000);
     }
   }
 
