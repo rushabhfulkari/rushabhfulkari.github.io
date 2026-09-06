@@ -284,7 +284,7 @@
         chip: 'The missions',
         reply: '<p>Five worth opening. <strong>Cadence</strong> is the one you ' +
                'can run right now — ten production-grade Flutter features in one ' +
-               'codebase, 300 tests, CI green. Then CupidMedia (34 flavours, 60M ' +
+               'codebase. Then CupidMedia (34 flavours, 60M ' +
                'members), Highlands Brain, Sergo and Apprintly.</p>' +
                '<p><a href="#missions" data-go>Take me there →</a> · ' +
                '<a href="https://rushabhfulkari.github.io/cadence/">Open Cadence ↗</a></p>' },
