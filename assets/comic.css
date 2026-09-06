@@ -676,6 +676,7 @@ section, .hero { position: relative; overflow: hidden; }
 }
 .corner-id { left: clamp(14px, 2vw, 26px); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .corner-id .stamp { font-size: 10px; }
+.corner-id { transition: opacity .25s ease; }
 
 .corner-nav { right: clamp(14px, 2vw, 26px); }
 .corner-nav__btn {
@@ -713,7 +714,7 @@ section, .hero { position: relative; overflow: hidden; }
 .corner-nav__sheet a:hover { background: var(--ink); color: var(--paper); padding-left: 18px; }
 .corner-nav__sheet a:hover span { color: var(--lime); }
 @media (prefers-reduced-motion: reduce) { .corner-nav__sheet { animation: none; } }
-@media (max-width: 560px) { .corner-nav__label { display: none; } .corner-id .stamp:nth-child(2) { display: none; } }
+@media (max-width: 560px) { .corner-nav__label { display: none; } .corner-id .stamp:nth-child(3) { display: none; } }
 
 /* ============================================================
    SCROLLBUG — a red spider riding the page as a scroll indicator

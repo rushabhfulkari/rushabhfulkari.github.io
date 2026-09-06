@@ -171,6 +171,28 @@
     window.addEventListener('resize', placeSpider, { passive: true });
   }
 
+  /* --- the id badges belong to the first screen too ----------------------
+     Fixed at the top left, they rode over every section and collided with the
+     headings - clearest against "Got something worth building?" in the contact
+     block. They now fade out with the hero, the way the spider does. */
+  var cornerId = document.querySelector('.corner-id');
+  if (cornerId) {
+    var idHero = document.querySelector('.hero');
+    var fadeCornerId = function () {
+      var f = 1;
+      if (idHero) {
+        f = clamp01(idHero.getBoundingClientRect().bottom / (window.innerHeight * 0.5));
+      }
+      cornerId.style.opacity = f.toFixed(3);
+      cornerId.style.visibility = f < 0.02 ? 'hidden' : 'visible';
+      // Nothing in there is clickable, but do not let it eat taps once faded.
+      cornerId.style.pointerEvents = f < 0.5 ? 'none' : '';
+    };
+    fadeCornerId();
+    window.addEventListener('scroll', fadeCornerId, { passive: true });
+    window.addEventListener('resize', fadeCornerId, { passive: true });
+  }
+
   /* --- the red spider that rides the scrollbar ------------------------ */
   var bug = document.querySelector('.scrollbug');
   if (bug) {
