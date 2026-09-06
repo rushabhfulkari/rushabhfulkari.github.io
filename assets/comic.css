@@ -322,26 +322,8 @@ h2.section-title {
 /* ============================================================
    DISPATCHES (blog)
    ============================================================ */
-.dispatches { background: var(--paper-deep); border-block: var(--panel-border); }
-.dispatch {
-  display: grid; grid-template-columns: 58px 1fr auto; gap: 18px; align-items: start;
-  padding: 20px 0; border-bottom: 2px solid rgba(20,17,13,.16);
-  text-decoration: none; color: inherit;
-}
-.dispatch:first-of-type { border-top: 2px solid rgba(20,17,13,.16); }
-.dispatch__no { font-family: var(--display); font-size: 13px; color: var(--red); letter-spacing: .08em; padding-top: 4px; }
-.dispatch h3 {
-  font-family: var(--display); text-transform: uppercase; font-size: 20px;
-  margin: 0 0 6px; line-height: 1.08;
-  transition: color .18s ease;
-}
-.dispatch:hover h3 { color: var(--red); }
-.dispatch p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
-.dispatch__date { font-size: 11px; color: var(--ink-faint); white-space: nowrap; padding-top: 6px; }
 @media (max-width: 620px) {
-  .dispatch { grid-template-columns: 44px 1fr; }
-  .dispatch__date { display: none; }
-}
+    }
 
 /* ============================================================
    CONTACT + FOOTER
@@ -521,13 +503,9 @@ section, .hero { position: relative; overflow: hidden; }
 
 
 /* Dispatches: give the title room to breathe at full width. */
-.dispatch { grid-template-columns: 74px 1fr auto; gap: 26px; padding: 26px 0; }
-.dispatch h3 { font-size: clamp(20px, 2.4vw, 30px); }
-.dispatch p { font-size: 14.5px; max-width: 88ch; }
 
 @media (max-width: 620px) {
-  .dispatch { grid-template-columns: 48px 1fr; gap: 16px; }
-}
+  }
 
 /* ============================================================
    COMIC FURNITURE
@@ -798,7 +776,11 @@ section, .hero { position: relative; overflow: hidden; }
   }
 }
 
-@keyframes chatIn { from { opacity: 0; transform: scale(.86) translateY(18px); } }
+/* Translate only, with an explicit end state. A scale() here meant that any
+   interruption - a backgrounded tab pausing animations mid-flight - left the
+   panel frozen at .86 of its own width and offset by the bottom-right origin,
+   which is what made it look broken. A stalled translate is harmless. */
+@keyframes chatIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .chat[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .chat { animation: none; } }
 
@@ -888,10 +870,6 @@ section, .hero { position: relative; overflow: hidden; }
 }
 .chat__send:hover { transform: scale(1.09) rotate(-8deg); }
 .chat__send:disabled { opacity: .45; cursor: default; transform: none; }
-
-@media (max-width: 460px) {
-  .chat { right: 10px; bottom: 10px; width: calc(100vw - 20px); height: calc(100vh - 20px); }
-}
 
 /* ============================================================
    TOP BAR — logo left, sections right, one red call to action
@@ -1014,7 +992,7 @@ section, .hero { position: relative; overflow: hidden; }
 /* The log kept collapsing to one line: four chips stacked four-high, plus the
    header and the composer, left it about seventy pixels. One scrolling row of
    chips, and a floor the log cannot go under. */
-.chat__log { min-height: 30vh; }
+.chat__log { min-height: 0; }   /* so it scrolls instead of shoving the composer off */
 
 .chat__chips {
   flex-wrap: nowrap; overflow-x: auto; gap: 8px;
@@ -1061,3 +1039,41 @@ section, .hero { position: relative; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .figure--sway, .figure--drift { animation: none; }
 }
+
+.figure--origin   { bottom: 0;     left: 2%;   width: clamp(120px, 15vw, 215px); color: var(--ink); opacity: .13; }
+.figure--shooter  { top: 14%;      right: 3%;  width: clamp(80px, 10vw, 150px);  color: var(--ink); opacity: .11; }
+.figure--bolts    { top: 12%;      left: 4%;   width: clamp(90px, 11vw, 165px);  color: var(--red); opacity: .3; }
+@media (max-width: 780px) { .figure--origin, .figure--shooter, .figure--bolts { display: none; } }
+
+/* ============================================================
+   COMIC STRIP — four panels with black gutters between them.
+   The portraits are the Open Peeps set (CC0) already shipping
+   in Cadence, so they are Rushabh's to publish here too.
+   ============================================================ */
+.strip { background: var(--paper-deep); border-block: var(--panel-border); }
+.strip__panels {
+  display: grid; gap: 5px; background: var(--ink); border: 5px solid var(--ink);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  box-shadow: 10px 10px 0 rgba(20, 17, 13, .22); margin-top: 18px;
+}
+.panel {
+  margin: 0; padding: 20px 16px 18px; background: var(--paper);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(20,17,13,.10) 1px, transparent 0);
+  background-size: 8px 8px;
+}
+.panel img { width: 96px; height: 96px; object-fit: contain; }
+.bubble {
+  position: relative; margin-top: 4px; background: #FFFDF7;
+  border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 13px;
+  font-size: 13px; line-height: 1.45; text-align: center;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.bubble::before, .bubble::after {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+  border: 9px solid transparent;
+}
+.bubble::before { top: -18px; border-bottom-color: var(--ink); }
+.bubble::after  { top: -13px; border-bottom-color: #FFFDF7; border-width: 8px; }
+
+.figure--strip { top: 0; right: 7%; width: clamp(80px, 10vw, 140px); color: var(--ink); opacity: .16; transform-origin: 50% 0; }

@@ -144,62 +144,28 @@
     }, 2500);
   }
 
-  /* --- the hero spider: a pendulum on a fixed thread ------------------ */
-  /* The thread length never changes — a spider does not telescope. The body
-     swings on a damped spring driven by pointer velocity, so it overshoots,
-     comes back, and settles rather than sliding to a stop. It hangs from a
-     fixed anchor and fades out once the hero has scrolled away. */
+  /* --- the hero spider --------------------------------------------------
+     This used to swing on a pointer-driven damped spring. It read as noise
+     rather than as physics, so the spider now simply hangs still where it is
+     anchored and fades out with the hero: it belongs to the first screen and
+     to nothing after it. Nothing animates any more, so it no longer needs to
+     be withheld from readers who asked for reduced motion. */
   var spider = document.querySelector('.spider');
-  if (spider && !reduced) {
-    var pivot = spider.querySelector('.spider__pivot');
-    var anchorX = window.innerWidth * 0.62;
-    var targetX = anchorX;
-    var angle = 0, angVel = 0;
-    var lastPointerX = null;
-    var idle = true;
-
-    window.addEventListener('pointermove', function (e) {
-      idle = false;
-      if (lastPointerX !== null) {
-        // Pointer speed becomes a shove on the pendulum. Capped, or a fast
-        // flick sends it spinning like a propeller.
-        var shove = Math.max(-3.2, Math.min(3.2, (e.clientX - lastPointerX) * 0.05));
-        angVel += shove;
-      }
-      lastPointerX = e.clientX;
-      targetX = e.clientX;
-    }, { passive: true });
-
-    window.addEventListener('resize', function () {
-      anchorX = window.innerWidth * 0.62;
-    }, { passive: true });
-
-    (function swing(t) {
-      // Where the pointer is, relative to the anchor, is where the pendulum
-      // wants to rest — so it leans toward the cursor and hangs there.
-      var lean = idle
-        ? Math.sin(t / 1500) * 7
-        : Math.max(-34, Math.min(34, (targetX - anchorX) * 0.045));
-
-      // Damped spring toward the rest angle.
-      angVel += (lean - angle) * 0.012;   // stiffness
-      angVel *= 0.965;                     // damping — high enough to settle
-      angle += angVel;
-
-      var hero = document.querySelector('.hero');
+  if (spider) {
+    var hero = document.querySelector('.hero');
+    var placeSpider = function () {
+      spider.style.transform =
+        'translate3d(' + (window.innerWidth * 0.62 - 43) + 'px,0,0)';
       var fade = 1;
       if (hero) {
-        var b = hero.getBoundingClientRect().bottom;
-        // Gone by the time the hero has left: it belongs to the first screen.
-        fade = clamp01(b / (window.innerHeight * 0.55));
+        fade = clamp01(hero.getBoundingClientRect().bottom / (window.innerHeight * 0.55));
       }
       spider.style.opacity = fade.toFixed(3);
       spider.style.visibility = fade < 0.02 ? 'hidden' : 'visible';
-      spider.style.transform = 'translate3d(' + (anchorX - 43) + 'px,0,0)';
-      if (pivot) pivot.style.transform = 'rotate(' + angle.toFixed(2) + 'deg)';
-
-      requestAnimationFrame(swing);
-    })(0);
+    };
+    placeSpider();
+    window.addEventListener('scroll', placeSpider, { passive: true });
+    window.addEventListener('resize', placeSpider, { passive: true });
   }
 
   /* --- the red spider that rides the scrollbar ------------------------ */
@@ -308,23 +274,22 @@
                '<p><a href="#numbers" data-go>The full field report →</a></p>' },
 
       { keys: ['write', 'blog', 'article', 'dispatch', 'read', 'post'],
-        reply: '<p>Seven dispatches, and they are bugs with receipts rather than ' +
-               '“10 Flutter tips”. The <code>INSERT OR REPLACE</code> cascade that ' +
-               'ate an offline queue. The BLE reconnect that doubles every packet. ' +
-               'What building with an AI actually cost.</p>' +
-               '<p><a href="blog/">Read them all →</a></p>' },
+        reply: '<p>The writing is being reworked and is off the site for the ' +
+               'moment. The work it was about is still here though — every mission ' +
+               'says what broke and how it was found.</p>' +
+               '<p><a href="#missions" data-go>The missions →</a></p>' },
 
       { keys: ['ai', 'claude', 'llm', 'gpt', 'model'],
         reply: '<p>He uses Claude daily, and has written down what it is actually ' +
                'good at. Short version: ask for the seam, not the feature; make it ' +
                'write the limitation down; and never let a green test suite stand in ' +
-               'for looking at the screen.</p>' +
-               '<p><a href="blog/ten-features-with-claude.html">The long version ↗</a></p>' },
+               'for looking at the screen.</p>' },
 
       { keys: ['ble', 'bluetooth', 'offline', 'sync', 'sqlite', 'pigeon', 'add-to-app', 'native'],
         reply: '<p>All four have their own dispatch — offline-first sync with an ' +
-               'outbox, BLE stream lifecycle, add-to-app over Pigeon, and shipping at ' +
-               '34 flavours.</p><p><a href="blog/">Pick one ↗</a></p>' },
+               'outbox, BLE stream lifecycle, add-to-app over Pigeon, and shipping ' +
+               'at 34 flavours.</p>' +
+               '<p><a href="#missions" data-go>Pick one →</a></p>' },
 
       { keys: ['who', 'about', 'you', 'spinner', 'bot', 'yourself'],
         reply: '<p>I am scripted — no language model behind me. I match what you ' +
@@ -343,7 +308,7 @@
       'computed the ratios instead of trusting his eyes.</p>',
       '<p><code>INSERT OR REPLACE</code> in SQLite is a <em>delete</em> then an ' +
       'insert — so it fires <code>ON DELETE CASCADE</code> and quietly ate every ' +
-      'queued change. That one is in dispatch M-02.</p>',
+      'queued change.</p>',
       '<p>A cold Flutter engine costs about <strong>780ms</strong>. A pre-warmed ' +
       'one costs <strong>40</strong>. That difference is the whole reputation of ' +
       'embedded Flutter.</p>',
