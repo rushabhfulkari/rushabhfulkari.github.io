@@ -592,7 +592,7 @@ section, .hero { position: relative; overflow: hidden; }
 
 .loader__half {
   position: absolute; left: 0; width: 100%; height: 50.2%;
-  background: var(--paper); border-block: 5px solid var(--ink);
+  background: var(--paper);
   transition: transform .85s cubic-bezier(.76, 0, .24, 1);
 }
 .loader__half--top { top: 0; }
@@ -602,7 +602,7 @@ section, .hero { position: relative; overflow: hidden; }
   position: relative; z-index: 2; text-align: center;
   transition: opacity .3s ease, transform .5s cubic-bezier(.76,0,.24,1);
 }
-.loader__issue {
+.loader__word {
   font-family: var(--display); text-transform: uppercase;
   font-size: clamp(28px, 6vw, 74px); line-height: .9; letter-spacing: -.02em;
 }
