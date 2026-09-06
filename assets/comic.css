@@ -11,9 +11,9 @@
   --ink:        #14110D;
   --ink-soft:   #4A443A;
   /* Was #7C7466, which put .kicker at 3.85:1 on paper — under the 4.5:1 AA
-     floor for 11px text. #6B6356 measures 4.94:1 on --paper and 4.63:1 on
-     --paper-deep, the two grounds it actually sits on. */
-  --ink-faint:  #6B6356;
+     floor for 11px text. Measured against both grounds the token lands on,
+     --paper #F1EADA and --paper-deep #E4DAC4: this is 5.5:1 and 4.74:1. */
+  --ink-faint:  #645C50;
   --red:        #D42A3C;
   --red-deep:   #9E1A28;
   --blue:       #2B4FD8;
