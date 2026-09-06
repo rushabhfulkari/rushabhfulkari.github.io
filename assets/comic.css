@@ -346,6 +346,16 @@ h2.section-title {
 .chip--blue { background: var(--blue); color: var(--paper); }
 .chip--lime { background: var(--lime); }
 
+/* Store links sit tight against the app they belong to and read quieter than
+   its name, so the row scans as four apps rather than twelve chips. */
+.chipgroup { display: inline-flex; align-items: center; gap: 4px; }
+.chip--store {
+  font-size: 9px; padding: 2px 6px;
+  background: var(--paper-deep); color: var(--ink-soft);
+  transition: background .15s ease, color .15s ease;
+}
+.chip--store:hover { background: var(--ink); color: var(--paper); }
+
 /* ============================================================
    DISPATCHES (blog)
    ============================================================ */
