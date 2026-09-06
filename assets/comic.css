@@ -10,7 +10,10 @@
   --paper-deep: #E4DAC4;
   --ink:        #14110D;
   --ink-soft:   #4A443A;
-  --ink-faint:  #7C7466;
+  /* Was #7C7466, which put .kicker at 3.85:1 on paper — under the 4.5:1 AA
+     floor for 11px text. #6B6356 measures 4.94:1 on --paper and 4.63:1 on
+     --paper-deep, the two grounds it actually sits on. */
+  --ink-faint:  #6B6356;
   --red:        #D42A3C;
   --red-deep:   #9E1A28;
   --blue:       #2B4FD8;
