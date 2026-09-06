@@ -1050,3 +1050,45 @@ section, .hero { position: relative; overflow: hidden; }
 .bubble::before { top: -18px; border-bottom-color: var(--ink); }
 .bubble::after  { top: -13px; border-bottom-color: #FFFDF7; border-width: 8px; }
 
+/* ============================================================
+   FIGURES — original comic silhouettes
+   Drawn here rather than sourced. This page carries Rushabh's
+   name and goes in front of recruiters, so every mark on it has
+   to be his to use.
+   ============================================================ */
+.figure { position: absolute; pointer-events: none; z-index: 0; line-height: 0; }
+.figure svg { display: block; width: 100%; height: auto; }
+
+/* Hinged at the point the web is anchored, so it reads as weight on a
+   line rather than a picture being rocked. */
+@keyframes figureSway  { 0%, 100% { transform: rotate(-3.5deg); } 50% { transform: rotate(3.5deg); } }
+@keyframes emblemDrift { 0%, 100% { transform: translateY(-10px) rotate(-2deg); } 50% { transform: translateY(10px) rotate(2deg); } }
+.figure--sway  { animation: figureSway 7s ease-in-out infinite; }
+.figure--drift { animation: emblemDrift 11s ease-in-out infinite; }
+
+.figure--hero     { top: 6%;       right: 2%;    width: clamp(130px, 18vw, 270px); color: var(--ink);  opacity: .92; transform-origin: 30% 16%; }
+.figure--powers   { bottom: -40px; left: -46px;  width: clamp(150px, 19vw, 290px); color: var(--ink);  opacity: .08; }
+.figure--missions { top: 6%;       right: -24px; width: clamp(110px, 13vw, 195px); color: var(--ink);  opacity: .14; transform-origin: 72% 15%; }
+.figure--rule     { bottom: -26px; right: 5%;    width: clamp(100px, 12vw, 175px); color: var(--ink);  opacity: .15; transform-origin: 76% 14%; }
+/* Bottom-left: top-right is where the BANG burst lives. */
+.figure--numbers  { bottom: -34px; left: 2%;     width: clamp(140px, 17vw, 250px); color: var(--lime); opacity: .15; }
+.figure--contact  { bottom: -18px; left: 3%;     width: clamp(120px, 15vw, 225px); color: var(--paper); opacity: .2;  transform-origin: 72% 15%; }
+
+@media (max-width: 780px) {
+  .figure--powers, .figure--rule, .figure--missions { display: none; }
+  .figure--hero { opacity: .18; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .figure--sway, .figure--drift { animation: none; }
+}
+
+.figure--origin   { bottom: 0;     left: 2%;   width: clamp(120px, 15vw, 215px); color: var(--ink); opacity: .13; }
+.figure--shooter  { top: 14%;      right: 3%;  width: clamp(80px, 10vw, 150px);  color: var(--ink); opacity: .11; }
+.figure--bolts    { top: 12%;      left: 4%;   width: clamp(90px, 11vw, 165px);  color: var(--red); opacity: .3; }
+@media (max-width: 780px) { .figure--origin, .figure--shooter, .figure--bolts { display: none; } }
+
+.figure--origin   { bottom: 0;     left: 2%;   width: clamp(120px, 15vw, 215px); color: var(--ink); opacity: .13; }
+.figure--shooter  { top: 14%;      right: 3%;  width: clamp(80px, 10vw, 150px);  color: var(--ink); opacity: .11; }
+.figure--bolts    { top: 12%;      left: 4%;   width: clamp(90px, 11vw, 165px);  color: var(--red); opacity: .3; }
+.figure--strip { top: 0; right: 7%; width: clamp(80px, 10vw, 140px); color: var(--ink); opacity: .16; transform-origin: 50% 0; }
+@media (max-width: 780px) { .figure--origin, .figure--shooter, .figure--bolts { display: none; } }
