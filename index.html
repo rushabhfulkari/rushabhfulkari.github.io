@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/comic.css?v=20260906123225">
+<link rel="stylesheet" href="assets/comic.css?v=20260906131737">
 </head>
 <body id="top">
 <header class="topbar">
@@ -106,17 +106,17 @@
 <div class="loader" id="loader" role="status" aria-label="Loading">
   <div class="loader__half loader__half--top"></div>
   <div class="loader__half loader__half--bot"></div>
+  <span class="loader__thread" aria-hidden="true"></span>
+  <span class="loader__bug" aria-hidden="true"><svg viewBox="0 0 86 66" fill="none" aria-hidden="true"><g stroke="#14110D" stroke-width="4.4" stroke-linecap="round"><path d="M34 26C24 18 16 12 4 16"/><path d="M34 33C22 31 13 31 3 38"/><path d="M34 39C23 43 16 48 9 57"/><path d="M52 26C62 18 70 12 82 16"/><path d="M52 33C64 31 73 31 83 38"/><path d="M52 39C63 43 70 48 77 57"/></g><ellipse cx="43" cy="25" rx="9" ry="7" fill="#14110D"/><ellipse cx="43" cy="41" rx="13" ry="15" fill="#14110D"/></svg></span>
   <div class="loader__inner">
-    <svg class="loader__web" width="112" height="112" viewBox="0 0 112 112" fill="none"
-         stroke="#14110D" stroke-width="2.4" aria-hidden="true">
-      <circle cx="56" cy="56" r="14"/><circle cx="56" cy="56" r="27"/>
-      <circle cx="56" cy="56" r="40"/><circle cx="56" cy="56" r="53"/>
-      <path d="M56 3v106M3 56h106M18 18l76 76M94 18l-76 76"/>
-    </svg>
-    <p class="loader__word">Loading</p>
+    <div class="loader__web">
+      <svg viewBox="0 0 240 240" fill="none" aria-hidden="true">
+        <g class="loader__spokes" stroke="#14110D" stroke-width="2.6" stroke-linecap="round"></g>
+        <g class="loader__rings" stroke="#14110D" stroke-width="2.6" fill="none"></g>
+      </svg>
+      <span class="loader__num">0%</span>
+    </div>
     <p class="loader__sub">spinning the web&hellip;</p>
-    <div class="loader__bar"><div class="loader__fill"></div></div>
-    <p class="loader__pct">0%</p>
   </div>
 </div>
 
@@ -530,6 +530,6 @@
   </form>
 </section>
 
-<script src="assets/comic.js?v=20260906123225"></script>
+<script src="assets/comic.js?v=20260906131737"></script>
 </body>
 </html>

@@ -485,67 +485,113 @@
   }
 
   /* --- loader ----------------------------------------------------------
-     This was lost in an earlier rewrite of this file. The markup and the CSS
-     survived it, so the bar rendered but nothing ever set its width: it sat
-     at 0% until the CSS bail-out hid the whole loader four seconds later. */
+     A spider abseils down its thread into the web it is spinning. The drop is
+     the progress bar — there is no separate bar, so nothing can fall out of
+     sync with anything else. */
   var loader = document.querySelector('.loader');
   if (loader) {
-    var lFill = loader.querySelector('.loader__fill');
-    var lPct = loader.querySelector('.loader__pct');
-    var shown = 0;
-    var started = Date.now();
-    var done = false;
+    var lNum    = loader.querySelector('.loader__num');
+    var lThread = loader.querySelector('.loader__thread');
+    var lBug    = loader.querySelector('.loader__bug');
+    var lWeb    = loader.querySelector('.loader__web');
+    var shown = 0, started = Date.now(), done = false, DEADLINE = 1800;
 
-    // Real progress wherever the browser gives us any - images decoded, web
-    // fonts ready - plus a time floor so the bar always moves. A bar that
-    // sits at 0 and then jumps to 100 reads as broken rather than as fast.
-    var imgs = [].slice.call(document.images);
-    var loaded = 0;
+    /* Build the web: eight spokes and five rings, each path measured so its
+       dash offset can be driven straight from progress. */
+    var SVGNS = 'http://www.w3.org/2000/svg', CX = 120, CY = 120, N = 8;
+    var strands = [];
+    (function () {
+      var sg = loader.querySelector('.loader__spokes'),
+          rg = loader.querySelector('.loader__rings');
+      if (!sg || !rg) return;
+      for (var i = 0; i < N; i++) {
+        var a = (Math.PI * 2 * i) / N - Math.PI / 2, q = document.createElementNS(SVGNS, 'path');
+        q.setAttribute('d', 'M' + CX + ' ' + CY + 'L' +
+          (CX + Math.cos(a) * 104).toFixed(1) + ' ' + (CY + Math.sin(a) * 104).toFixed(1));
+        sg.appendChild(q);
+      }
+      [46, 62, 78, 92, 104].forEach(function (r) {
+        var d = '';
+        for (var i = 0; i <= N; i++) {
+          var a = (Math.PI * 2 * i) / N - Math.PI / 2;
+          d += (i ? 'L' : 'M') + (CX + Math.cos(a) * r).toFixed(1) + ' ' +
+                                 (CY + Math.sin(a) * r).toFixed(1);
+        }
+        var q = document.createElementNS(SVGNS, 'path');
+        q.setAttribute('d', d);
+        rg.appendChild(q);
+      });
+      [].concat([].slice.call(sg.children), [].slice.call(rg.children))
+        .forEach(function (el, i) {
+          var len = el.getTotalLength();
+          el.style.strokeDasharray = len;
+          el.style.strokeDashoffset = len;
+          // spokes first (0-40%), then the rings winding outward (30-100%)
+          strands.push({ el: el, len: len,
+            from: i < N ? 0.02 + i * 0.028 : 0.32 + (i - N) * 0.13,
+            to:   i < N ? 0.30 + i * 0.028 : 0.55 + (i - N) * 0.13 });
+        });
+    }());
+
+    // Measured once rather than every frame: reading layout inside the loop
+    // would thrash it for a number that only moves on resize.
+    var landY = 0;
+    function measure() {
+      if (!lWeb) return;
+      var r = lWeb.getBoundingClientRect();
+      landY = r.top + r.height * 0.2;
+    }
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+
+    var imgs = [].slice.call(document.images), loaded = 0;
     imgs.forEach(function (im) {
       if (im.complete) { loaded++; return; }
-      im.addEventListener('load', function () { loaded++; }, { once: true });
+      im.addEventListener('load',  function () { loaded++; }, { once: true });
       im.addEventListener('error', function () { loaded++; }, { once: true });
     });
-
-    // The page is built out of display faces; landing on it mid-swap is worse
-    // than waiting a moment for them.
     var fontsReady = !document.fonts;
     if (document.fonts) { document.fonts.ready.then(function () { fontsReady = true; }); }
+
+    function paint(p) {
+      var v = Math.round(p * 100);
+      if (lNum) lNum.textContent = v + '%';
+      strands.forEach(function (s) {
+        s.el.style.strokeDashoffset = (1 - clamp01((p - s.from) / (s.to - s.from))) * s.len;
+      });
+      var drop = 8 + Math.max(0, landY - 8) * p;
+      if (lThread) lThread.style.height = drop + 'px';
+      if (lBug) lBug.style.top = drop + 'px';
+      return v;
+    }
 
     function finish() {
       if (done) return;
       done = true;
-      if (lFill) lFill.style.width = '100%';
-      if (lPct) lPct.textContent = '100%';
+      paint(1);
       setTimeout(function () {
         loader.classList.add('is-done');
         // Out of the tree once the panels have parted, so it can never sit
         // invisibly over the page swallowing clicks.
         setTimeout(function () { loader.remove(); }, 950);
-      }, reduced ? 0 : 240);
+      }, reduced ? 0 : 260);
     }
 
-    // Time sets the pace; real readiness opens the last stretch. Gating the
-    // whole bar on the real signals instead left it dead at 0% until the
-    // images landed, and stalled at 92% for seconds when a font never came.
-    var DEADLINE = 1800;
-
-    (function tick() {
-      if (done) return;
-      var elapsed = Date.now() - started;
-      var imagesDone = !imgs.length || loaded >= imgs.length;
-      var ready = (imagesDone && fontsReady) || elapsed > DEADLINE;
-      var target = ready ? 100 : Math.min(92, (elapsed / DEADLINE) * 92);
-      shown += (target - shown) * 0.25;
-      var v = Math.round(shown);
-      if (lFill) lFill.style.width = v + '%';
-      if (lPct) lPct.textContent = v + '%';
-      if (v >= 99) { finish(); return; }
-      requestAnimationFrame(tick);
-    }());
-
-    // Belt and braces on top of the CSS bail-out.
-    setTimeout(finish, 4000);
+    if (reduced) { paint(1); finish(); }
+    else {
+      (function tick() {
+        if (done) return;
+        var elapsed = Date.now() - started;
+        var imagesDone = !imgs.length || loaded >= imgs.length;
+        var ready = (imagesDone && fontsReady) || elapsed > DEADLINE;
+        var target = ready ? 100 : Math.min(92, (elapsed / DEADLINE) * 92);
+        shown += (target - shown) * 0.25;
+        if (paint(shown / 100) >= 99) { finish(); return; }
+        requestAnimationFrame(tick);
+      }());
+      // Belt and braces on top of the CSS bail-out.
+      setTimeout(finish, 4000);
+    }
   }
 
   var y = document.querySelector('[data-year]');
