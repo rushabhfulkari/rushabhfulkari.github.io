@@ -478,6 +478,70 @@
     });
   }
 
+  /* --- loader ----------------------------------------------------------
+     This was lost in an earlier rewrite of this file. The markup and the CSS
+     survived it, so the bar rendered but nothing ever set its width: it sat
+     at 0% until the CSS bail-out hid the whole loader four seconds later. */
+  var loader = document.querySelector('.loader');
+  if (loader) {
+    var lFill = loader.querySelector('.loader__fill');
+    var lPct = loader.querySelector('.loader__pct');
+    var shown = 0;
+    var started = Date.now();
+    var done = false;
+
+    // Real progress wherever the browser gives us any - images decoded, web
+    // fonts ready - plus a time floor so the bar always moves. A bar that
+    // sits at 0 and then jumps to 100 reads as broken rather than as fast.
+    var imgs = [].slice.call(document.images);
+    var loaded = 0;
+    imgs.forEach(function (im) {
+      if (im.complete) { loaded++; return; }
+      im.addEventListener('load', function () { loaded++; }, { once: true });
+      im.addEventListener('error', function () { loaded++; }, { once: true });
+    });
+
+    // The page is built out of display faces; landing on it mid-swap is worse
+    // than waiting a moment for them.
+    var fontsReady = !document.fonts;
+    if (document.fonts) { document.fonts.ready.then(function () { fontsReady = true; }); }
+
+    function finish() {
+      if (done) return;
+      done = true;
+      if (lFill) lFill.style.width = '100%';
+      if (lPct) lPct.textContent = '100%';
+      setTimeout(function () {
+        loader.classList.add('is-done');
+        // Out of the tree once the panels have parted, so it can never sit
+        // invisibly over the page swallowing clicks.
+        setTimeout(function () { loader.remove(); }, 950);
+      }, reduced ? 0 : 240);
+    }
+
+    // Time sets the pace; real readiness opens the last stretch. Gating the
+    // whole bar on the real signals instead left it dead at 0% until the
+    // images landed, and stalled at 92% for seconds when a font never came.
+    var DEADLINE = 1800;
+
+    (function tick() {
+      if (done) return;
+      var elapsed = Date.now() - started;
+      var imagesDone = !imgs.length || loaded >= imgs.length;
+      var ready = (imagesDone && fontsReady) || elapsed > DEADLINE;
+      var target = ready ? 100 : Math.min(92, (elapsed / DEADLINE) * 92);
+      shown += (target - shown) * 0.25;
+      var v = Math.round(shown);
+      if (lFill) lFill.style.width = v + '%';
+      if (lPct) lPct.textContent = v + '%';
+      if (v >= 99) { finish(); return; }
+      requestAnimationFrame(tick);
+    }());
+
+    // Belt and braces on top of the CSS bail-out.
+    setTimeout(finish, 4000);
+  }
+
   var y = document.querySelector('[data-year]');
   if (y) y.textContent = String(new Date().getFullYear());
 }());

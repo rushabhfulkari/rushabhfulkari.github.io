@@ -1029,3 +1029,35 @@ section, .hero { position: relative; overflow: hidden; }
   .chat__bar, .chat__form { padding: 10px 12px; }
   .chat__log { min-height: 0; }        /* flex already gives it everything */
 }
+
+/* ============================================================
+   FIGURES — original comic silhouettes
+   Drawn here rather than sourced. This page carries Rushabh's
+   name and goes in front of recruiters, so every mark on it has
+   to be his to use.
+   ============================================================ */
+.figure { position: absolute; pointer-events: none; z-index: 0; line-height: 0; }
+.figure svg { display: block; width: 100%; height: auto; }
+
+/* Hinged at the point the web is anchored, so it reads as weight on a
+   line rather than a picture being rocked. */
+@keyframes figureSway  { 0%, 100% { transform: rotate(-3.5deg); } 50% { transform: rotate(3.5deg); } }
+@keyframes emblemDrift { 0%, 100% { transform: translateY(-10px) rotate(-2deg); } 50% { transform: translateY(10px) rotate(2deg); } }
+.figure--sway  { animation: figureSway 7s ease-in-out infinite; }
+.figure--drift { animation: emblemDrift 11s ease-in-out infinite; }
+
+.figure--hero     { top: 6%;       right: 2%;    width: clamp(130px, 18vw, 270px); color: var(--ink);  opacity: .92; transform-origin: 30% 16%; }
+.figure--powers   { bottom: -40px; left: -46px;  width: clamp(150px, 19vw, 290px); color: var(--ink);  opacity: .08; }
+.figure--missions { top: 6%;       right: -24px; width: clamp(110px, 13vw, 195px); color: var(--ink);  opacity: .14; transform-origin: 72% 15%; }
+.figure--rule     { bottom: -26px; right: 5%;    width: clamp(100px, 12vw, 175px); color: var(--ink);  opacity: .15; transform-origin: 76% 14%; }
+/* Bottom-left: top-right is where the BANG burst lives. */
+.figure--numbers  { bottom: -34px; left: 2%;     width: clamp(140px, 17vw, 250px); color: var(--lime); opacity: .15; }
+.figure--contact  { bottom: -18px; left: 3%;     width: clamp(120px, 15vw, 225px); color: var(--paper); opacity: .2;  transform-origin: 72% 15%; }
+
+@media (max-width: 780px) {
+  .figure--powers, .figure--rule, .figure--missions { display: none; }
+  .figure--hero { opacity: .18; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .figure--sway, .figure--drift { animation: none; }
+}
