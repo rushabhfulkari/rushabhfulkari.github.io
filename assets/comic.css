@@ -1179,3 +1179,47 @@ a.chip:hover { transform: translate(-2px,-2px); box-shadow: 3px 3px 0 var(--ink)
   a.chip:hover, .mission:hover .tape-print, .beat:hover .tape-print,
   .beat:hover, .stat:hover, .contact__links a:hover { transform: none; }
 }
+
+/* ============================================================
+   TWO SET-PIECES — the name, and the one rule
+   ============================================================ */
+
+/* The letters hold still and invisible until the loading panels have parted,
+   so the entrance is not spent behind a lid. Before that they simply are not
+   painted; if the script never runs, .is-loaded never lands and the fallback
+   below keeps the name fully visible. */
+.hero__name i { display: inline-block; font-style: normal; }
+body.is-loaded .hero__name i {
+  /* The per-letter delay is set inline by the script; naming the shorthand
+     here would reset it to 0 and land the whole name on one frame. */
+  animation-name: nameIn;
+  animation-duration: .58s;
+  animation-timing-function: cubic-bezier(.22,.9,.28,1);
+  animation-fill-mode: both;
+}
+/* Once the entrance has had its moment the letters stand on their own, so a
+   paused or never-run animation cannot leave the name invisible. */
+.hero__name.is-settled i { animation: none; opacity: 1; transform: none; }
+
+@keyframes nameIn {
+  from { opacity: 0; transform: translateY(.42em) rotate(-7deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* A highlighter dragged under the emphasised phrases, second after first. */
+.rule__line em {
+  background-image: linear-gradient(var(--lime), var(--lime));
+  background-repeat: no-repeat;
+  background-position: 0 82%;
+  background-size: 0 .17em;
+  transition: background-size .52s cubic-bezier(.22,.9,.28,1);
+}
+.rule__line.is-marked em { background-size: 100% .17em; }
+.rule__line.is-marked em + br + em,
+.rule__line.is-marked em ~ em { transition-delay: .34s; }
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-loaded .hero__name i { animation: none; }
+  .rule__line em { transition: none; }
+  .rule__line.is-marked em { background-size: 100% .17em; }
+}

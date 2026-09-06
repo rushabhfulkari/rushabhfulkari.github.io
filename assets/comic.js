@@ -609,7 +609,10 @@
         loader.classList.add('is-done');
         // Out of the tree once the panels have parted, so it can never sit
         // invisibly over the page swallowing clicks.
-        setTimeout(function () { loader.remove(); }, 950);
+        setTimeout(function () {
+          loader.remove();
+          document.body.classList.add('is-loaded');   // cues the name
+        }, 950);
       }, reduced ? 0 : 260);
     }
 
@@ -632,6 +635,68 @@
       setTimeout(finish, 5000);
     }
   }
+
+  /* --- the name, letter by letter -------------------------------------
+     Split once into inline-block letters, each given its own delay, and only
+     released when the loading panels have gone — otherwise the entrance plays
+     behind a lid and nobody sees it. The h1 keeps an aria-label so the split
+     never reaches a screen reader as loose characters. */
+  (function () {
+    var name = document.querySelector('.hero__name');
+    if (!name) return;
+    name.setAttribute('aria-label', 'Rushabh Fulkari');
+    var n = 0;
+    [].slice.call(name.children).forEach(function (line) {
+      var text = line.textContent;
+      line.textContent = '';
+      line.setAttribute('aria-hidden', 'true');
+      text.split('').forEach(function (ch) {
+        var i = document.createElement('i');
+        i.textContent = ch;
+        i.style.animationDelay = (0.035 * n++).toFixed(3) + 's';
+        line.appendChild(i);
+      });
+    });
+    // No loader on the page (or it never ran) — release them anyway.
+    if (!document.querySelector('.loader')) document.body.classList.add('is-loaded');
+
+    // A stagger built on animation-fill-mode holds every letter at its `from`
+    // state until its turn comes. If those animations never run — a tab
+    // loaded in the background is the common case — the name would sit
+    // invisible indefinitely. Once the entrance has had time to play, settle
+    // the letters explicitly and stop depending on it.
+    var settle = function () { name.classList.add('is-settled'); };
+    if (document.body.classList.contains('is-loaded')) setTimeout(settle, 1400);
+    else {
+      var mo = new MutationObserver(function () {
+        if (!document.body.classList.contains('is-loaded')) return;
+        mo.disconnect();
+        setTimeout(settle, 1400);
+      });
+      mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      setTimeout(settle, 7000);           // last resort, whatever happened
+    }
+  }());
+
+  /* --- the rule gets marked up like someone meant it -------------------
+     A highlighter drags under each emphasised phrase as the line arrives,
+     the second a beat after the first, the way you would underline while
+     reading rather than all at once. */
+  (function () {
+    var line = document.querySelector('.rule__line');
+    if (!line || !('IntersectionObserver' in window)) {
+      if (line) line.classList.add('is-marked');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-marked');
+        io.unobserve(e.target);              // one pass, not a loop
+      });
+    }, { threshold: 0.45 });
+    io.observe(line);
+  }());
 
   var y = document.querySelector('[data-year]');
   if (y) y.textContent = String(new Date().getFullYear());
