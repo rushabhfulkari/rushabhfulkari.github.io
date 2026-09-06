@@ -205,6 +205,30 @@ h2.section-title {
 
 .hero__name { font-size: clamp(56px, 15.5vw, 210px); }
 .hero__name span { display: block; }
+
+/* The name, knocked out of a full-bleed red band. Overrides .display--tone,
+   whose lettering.svg fill lives on the inner spans rather than the h1 — so
+   the override has to sit on the spans too, or the pattern wins. */
+.hero__name {
+  position: relative;
+  isolation: isolate;            /* keeps the band's z-index:-1 inside the h1 */
+  background-image: none;
+  padding: clamp(16px, 3vh, 32px) 0 clamp(20px, 3.4vh, 38px);
+}
+.hero__name > span {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--paper);
+  -webkit-text-fill-color: var(--paper);
+  filter: none;
+  text-shadow: 6px 7px 0 rgba(20, 17, 13, .42);
+}
+.hero__name::before {
+  content: ''; position: absolute; z-index: -1;
+  top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100vw; background: var(--red);
+}
 .hero__tag {
   margin: clamp(20px, 4vh, 38px) 0 0; max-width: 46ch;
   font-size: clamp(15px, 1.6vw, 19px); color: var(--ink-soft);
@@ -1066,7 +1090,7 @@ section, .hero { position: relative; overflow: hidden; }
 .figure--sway  { animation: figureSway 7s ease-in-out infinite; }
 .figure--drift { animation: emblemDrift 11s ease-in-out infinite; }
 
-.figure--hero     { top: 6%;       right: 2%;    width: clamp(130px, 18vw, 270px); color: var(--ink);  opacity: .92; transform-origin: 30% 16%; }
+.figure--hero     { z-index: 2; top: 6%;       right: 2%;    width: clamp(130px, 18vw, 270px); color: var(--ink);  opacity: .92; transform-origin: 30% 16%; }
 .figure--powers   { bottom: -40px; left: -46px;  width: clamp(150px, 19vw, 290px); color: var(--ink);  opacity: .08; }
 .figure--missions { top: 6%;       right: -24px; width: clamp(110px, 13vw, 195px); color: var(--ink);  opacity: .14; transform-origin: 72% 15%; }
 .figure--rule     { bottom: -26px; right: 5%;    width: clamp(100px, 12vw, 175px); color: var(--ink);  opacity: .15; transform-origin: 76% 14%; }

@@ -154,8 +154,11 @@
   if (spider) {
     var hero = document.querySelector('.hero');
     var placeSpider = function () {
+      // Further right on a narrow screen: at 62% the thread hangs straight
+      // through the name, which the red band made obvious.
+      var frac = window.innerWidth < 760 ? 0.87 : 0.62;
       spider.style.transform =
-        'translate3d(' + (window.innerWidth * 0.62 - 43) + 'px,0,0)';
+        'translate3d(' + (window.innerWidth * frac - 43) + 'px,0,0)';
       var fade = 1;
       if (hero) {
         fade = clamp01(hero.getBoundingClientRect().bottom / (window.innerHeight * 0.55));
