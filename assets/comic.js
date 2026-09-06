@@ -531,9 +531,13 @@
           el.style.strokeDasharray = len;
           el.style.strokeDashoffset = len;
           // spokes first (0-40%), then the rings winding outward (30-100%)
+          // Every strand must finish at or before p = 1. The rings used to be
+          // scheduled to 0.55 + k * 0.13, which put the outermost one's
+          // finish at 1.07 — a value progress never reaches, so the last ring
+          // sat 70% drawn on a completed web. They all close by 0.97 now.
           strands.push({ el: el, len: len,
-            from: i < N ? 0.02 + i * 0.028 : 0.32 + (i - N) * 0.13,
-            to:   i < N ? 0.30 + i * 0.028 : 0.55 + (i - N) * 0.13 });
+            from: i < N ? 0.02 + i * 0.028 : 0.28 + (i - N) * 0.12,
+            to:   i < N ? 0.30 + i * 0.028 : 0.55 + (i - N) * 0.105 });
         });
     }());
 
@@ -582,6 +586,9 @@
       if (done) return;
       done = true;
       paint(1);
+      // Close every strand outright rather than trusting the schedule to land
+      // exactly on 1. A web that is 70% spun at 100% is what this guards.
+      strands.forEach(function (st) { st.el.style.strokeDashoffset = 0; });
       setTimeout(function () {
         loader.classList.add('is-done');
         // Out of the tree once the panels have parted, so it can never sit
