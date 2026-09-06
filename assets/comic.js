@@ -43,6 +43,18 @@
       };
     });
 
+    // A container marked data-stagger deals its children in rather than
+    // revealing the whole grid on one frame. Later children get a smaller
+    // start/end, so they have to scroll higher before their pass begins.
+    items.forEach(function (it) {
+      var p = it.el.parentElement;
+      if (!p || !p.hasAttribute('data-stagger')) return;
+      var step = parseFloat(p.getAttribute('data-stagger')) || 0.045;
+      var idx = [].indexOf.call(p.children, it.el);
+      it.start -= idx * step;
+      it.end -= idx * step;
+    });
+
     // Hide the risers here rather than in the stylesheet. If this script
     // never runs — blocked, errored, an old browser — the page stays fully
     // visible instead of being a blank sheet of cream.
@@ -535,9 +547,13 @@
           // scheduled to 0.55 + k * 0.13, which put the outermost one's
           // finish at 1.07 — a value progress never reaches, so the last ring
           // sat 70% drawn on a completed web. They all close by 0.97 now.
+          // The web is spun quickly and finishes at 72%, so it stands complete
+          // for a beat while the spider finishes its drop. Every strand still
+          // closes well before p = 1 — a ring scheduled past 1 is what left
+          // the outermost one 70% drawn on a "finished" web.
           strands.push({ el: el, len: len,
-            from: i < N ? 0.02 + i * 0.028 : 0.28 + (i - N) * 0.12,
-            to:   i < N ? 0.30 + i * 0.028 : 0.55 + (i - N) * 0.105 });
+            from: i < N ? 0.00 + i * 0.018 : 0.20 + (i - N) * 0.09,
+            to:   i < N ? 0.14 + i * 0.018 : 0.36 + (i - N) * 0.09 });
         });
     }());
 

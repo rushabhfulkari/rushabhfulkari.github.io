@@ -1139,3 +1139,43 @@ section, .hero { position: relative; overflow: hidden; }
 .figure--bolts    { top: 12%;      left: 4%;   width: clamp(90px, 11vw, 165px);  color: var(--red); opacity: .3; }
 .figure--strip { top: 0; right: 7%; width: clamp(80px, 10vw, 140px); color: var(--ink); opacity: .16; transform-origin: 50% 0; }
 @media (max-width: 780px) { .figure--origin, .figure--shooter, .figure--bolts { display: none; } }
+
+/* ============================================================
+   MOTION — the small responses, on top of the scroll passes
+   Nothing here moves on its own: every rule below answers a
+   pointer, so a still page stays still.
+   ============================================================ */
+
+/* Chips are links; they should behave like the buttons they resemble. */
+.chip { transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease; }
+a.chip:hover { transform: translate(-2px,-2px); box-shadow: 3px 3px 0 var(--ink); }
+
+/* The taped prints lift out of the card you are reading. */
+.tape-print { transition: transform .26s cubic-bezier(.34,1.5,.64,1); }
+.mission:hover .tape-print,
+.beat:hover .tape-print { transform: scale(1.05) rotate(-1.5deg); }
+
+/* Origin beats and stat tiles answer the pointer like the cards do. */
+.beat { transition: transform .2s cubic-bezier(.34,1.5,.64,1); }
+.beat:hover { transform: translateY(-4px); }
+.stat { transition: transform .2s cubic-bezier(.34,1.5,.64,1); }
+.stat:hover { transform: translateY(-5px); }
+
+/* Contact buttons already carry a hard shadow — give them the same nudge. */
+.contact__links a { transition: transform .16s cubic-bezier(.34,1.56,.64,1); }
+.contact__links a:hover { transform: translate(-2px,-2px); }
+
+/* The strip holds still while you read it. */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track { animation-play-state: paused; }
+
+/* A power card leans very slightly toward you. */
+.power { transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+.power:hover .power__no { color: var(--ink); }
+.power__no { transition: color .18s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chip, .tape-print, .beat, .stat, .contact__links a, .power, .power__no { transition: none; }
+  a.chip:hover, .mission:hover .tape-print, .beat:hover .tape-print,
+  .beat:hover, .stat:hover, .contact__links a:hover { transform: none; }
+}

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/comic.css?v=20260906133118">
+<link rel="stylesheet" href="assets/comic.css?v=20260906133643">
 </head>
 <body id="top">
 <header class="topbar">
@@ -192,7 +192,7 @@
       <p class="section-sub" data-fx="rise">Seven of them, and they are specific.</p>
     </div>
 
-    <div class="powers__grid">
+    <div class="powers__grid" data-stagger="0.05">
       <article class="power" data-fx="rise scale" data-from=".95" data-to="1">
         <p class="power__no">01</p>
         <h3>Cross-platform<br>architecture</h3>
@@ -257,7 +257,7 @@
     <h2 class="section-title" data-fx="rise drift" data-to="-26">Selected<br>work</h2>
     <p class="section-sub" data-fx="rise">Five that are worth opening. One of them you can run in this browser.</p>
 
-    <div class="missions__grid page-grid">
+    <div class="missions__grid page-grid" data-stagger="0.05">
       <a class="mission mission--wide" data-fx="rise scale" data-from=".94" data-to="1" data-start=".95" data-end=".5" href="https://rushabhfulkari.github.io/cadence/">
         <div class="mission__top">
           <span class="tape-print mission__art"><img src="art/sessions.png" alt=""></span>
@@ -424,10 +424,10 @@
   <span class="figure figure--strip figure--sway" aria-hidden="true"><svg viewBox="0 0 220 380" fill="none" aria-hidden="true"><path d="M110 0 L110 112" stroke="currentColor" stroke-width="3"/><g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M110 114 L80 150 L98 196" stroke-width="19"/><path d="M110 114 L140 150 L122 196" stroke-width="19"/><path d="M110 196 L110 262" stroke-width="28"/><path d="M110 208 L62 238 L50 292" stroke-width="15"/><path d="M110 208 L158 238 L170 292" stroke-width="15"/></g><circle cx="110" cy="286" r="19" fill="currentColor"/></svg></span>
   <div class="wrap">
     <p class="kicker" data-fx="rise">— meanwhile, in the standup —</p>
-    <div class="strip__panels" data-fx="rise">
-        <figure class="panel"><img src="art/mira.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">We need this in 3 days.</figcaption></figure>
-        <figure class="panel"><img src="art/kwame.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">By Thursday.</figcaption></figure>
-        <figure class="panel"><img src="art/lena.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">One codebase. It already is.</figcaption></figure>
+    <div class="strip__panels" data-stagger="0.06">
+        <figure class="panel" data-fx="rise" data-rise="30"><img src="art/mira.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">We need this in 3 days.</figcaption></figure>
+        <figure class="panel" data-fx="rise" data-rise="30"><img src="art/kwame.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">By Thursday.</figcaption></figure>
+        <figure class="panel" data-fx="rise" data-rise="30"><img src="art/lena.png" alt="" loading="lazy" width="96" height="96"><figcaption class="bubble">One codebase. It already is.</figcaption></figure>
     </div>
   </div>
 </section>
@@ -442,15 +442,15 @@
     <p class="kicker" data-fx="rise" style="color:#B9B1A2">— field report —</p>
     <h2 class="section-title" data-fx="rise drift" data-to="-26">The<br>numbers</h2>
     <p class="section-sub" data-fx="rise">Everything below is production, not a side project.</p>
-    <div class="stats" data-fx="rise">
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="34" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">App flavours, one codebase</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="180" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">Countries served</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="43" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Languages shipped</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="1.4" data-decimals="1" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Installs per month</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
-      <div class="stat"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
+    <div class="stats" data-stagger="0.028">
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="60" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Registered members</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="34" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">App flavours, one codebase</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="180" data-suffix="+" data-start=".95" data-end=".55">0</p><p class="stat__l">Countries served</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="43" data-suffix="" data-start=".95" data-end=".55">0</p><p class="stat__l">Languages shipped</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="1.4" data-decimals="1" data-suffix="M+" data-start=".95" data-end=".55">0</p><p class="stat__l">Installs per month</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%" data-start=".95" data-end=".55">0</p><p class="stat__l">Deploy time removed</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="80" data-suffix="%+" data-start=".95" data-end=".55">0</p><p class="stat__l">Test coverage</p></div>
+      <div class="stat" data-fx="rise" data-rise="26"><p class="stat__n" data-fx="counter" data-to="5" data-suffix=" yrs" data-start=".95" data-end=".55">0</p><p class="stat__l">Shipping Flutter</p></div>
     </div>
   </div>
 </section>
@@ -530,6 +530,6 @@
   </form>
 </section>
 
-<script src="assets/comic.js?v=20260906133118"></script>
+<script src="assets/comic.js?v=20260906133643"></script>
 </body>
 </html>
