@@ -106,6 +106,11 @@
         case 'scale':
           t.push('scale(' + (it.from + (it.to - it.from) * e) + ')');
           break;
+        case 'mark':
+          // A highlighter dragged along by the scroll rather than fired once
+          // on entry, so it fills and empties with the reader's position.
+          el.style.setProperty('--mark', (e * 100).toFixed(1) + '%');
+          break;
         case 'counter':
           if (!it.done) {
             var target = it.to;
@@ -645,6 +650,11 @@
     var name = document.querySelector('.hero__name');
     if (!name) return;
     name.setAttribute('aria-label', 'Rushabh Fulkari');
+    // Marks the letters hidden from the moment they exist. Without it they
+    // paint at full opacity first and only vanish when .is-loaded arrives and
+    // the animation's backwards fill takes hold — the name appeared, blinked
+    // out, then rebuilt itself.
+    name.classList.add('is-split');
     var n = 0;
     [].slice.call(name.children).forEach(function (line) {
       var text = line.textContent;
@@ -676,26 +686,6 @@
       mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
       setTimeout(settle, 7000);           // last resort, whatever happened
     }
-  }());
-
-  /* --- the rule gets marked up like someone meant it -------------------
-     A highlighter drags under each emphasised phrase as the line arrives,
-     the second a beat after the first, the way you would underline while
-     reading rather than all at once. */
-  (function () {
-    var line = document.querySelector('.rule__line');
-    if (!line || !('IntersectionObserver' in window)) {
-      if (line) line.classList.add('is-marked');
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        e.target.classList.add('is-marked');
-        io.unobserve(e.target);              // one pass, not a loop
-      });
-    }, { threshold: 0.45 });
-    io.observe(line);
   }());
 
   var y = document.querySelector('[data-year]');
