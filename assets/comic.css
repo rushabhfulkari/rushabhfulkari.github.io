@@ -353,11 +353,11 @@ h2.section-title {
   /* The label is the platform mark itself now, so the chip sizes to the glyph
      rather than to text. The name lives in aria-label. */
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 3px 7px; min-height: 19px;
+  padding: 3px 7px; min-height: 21px;
   background: var(--paper-deep); color: var(--ink-soft);
   transition: background .15s ease, color .15s ease;
 }
-.chip--store svg { display: block; width: 11px; height: 11px; }
+.chip--store svg { display: block; width: 13px; height: 13px; }
 .chip--store:hover { background: var(--ink); color: var(--paper); }
 
 /* ============================================================
